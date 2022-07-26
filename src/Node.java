@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Node implements Drawable {
     private final int id;
@@ -9,6 +11,15 @@ public class Node implements Drawable {
     private ElementStatus status;
     private boolean trustFactor;
     private final int sizeOfNode = 50;
+    private static final HashMap<ElementStatus, Color> elementStatusColorMap = new HashMap<>();
+
+    static {
+        elementStatusColorMap.put(ElementStatus.ACTIVE, Color.ORANGE);
+        elementStatusColorMap.put(ElementStatus.NODE_IS_START_NODE, Color.GREEN.brighter());
+        elementStatusColorMap.put(ElementStatus.NODE_CAN_BE_END_NODE, Color.RED);
+        elementStatusColorMap.put(ElementStatus.NODE_IS_MOVABLE, Color.ORANGE);
+
+    }
 
     public Node(int id, int x, int y, String nodeName) {
         this.id = id;
@@ -82,13 +93,11 @@ public class Node implements Drawable {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        graphics2D.setColor(Color.GREEN);
+        graphics2D.setColor(Color.BLUE);
         graphics2D.fill(this.getEllipse());
-        if (this.status == ElementStatus.ACTIVE || this.status == ElementStatus.NODE_IS_MOVABLE) {
-            graphics2D.setColor(Color.ORANGE);
-            graphics2D.setStroke(new BasicStroke(3));
-            graphics2D.draw(this.getEllipse());
-        }
+        graphics2D.setColor(elementStatusColorMap.get(this.status));
+        graphics2D.setStroke(new BasicStroke(3));
+        graphics2D.draw(this.getEllipse());
     }
 
     @Override

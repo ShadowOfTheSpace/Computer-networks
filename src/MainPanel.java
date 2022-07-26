@@ -73,6 +73,15 @@ public class MainPanel extends JPanel {
                             .stream()
                             .filter(line -> line.getStatus() == ElementStatus.LINE_STILL_DRAWING)
                             .findFirst().ifPresent(line -> line.setCursorCoordinates(x, y));
+                    Node currentNode = getNodeByPoint(x, y);
+                    if (currentNode != null && currentNode.getStatus() != ElementStatus.NODE_IS_START_NODE) {
+                        currentNode.setStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                    } else {
+                        currentNode = getNodeByStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                        if (currentNode != null) {
+                            currentNode.setStatus(ElementStatus.NONE);
+                        }
+                    }
                 }
                 repaint();
             }
@@ -95,7 +104,9 @@ public class MainPanel extends JPanel {
                         }
                     }
                 } else if (mode == Modes.CREATING_LINES) {
-                    if (getNodeByPoint(x, y) != null) {
+                    Node currentNode = getNodeByPoint(x, y);
+                    if (currentNode != null) {
+                        currentNode.setStatus(ElementStatus.NODE_IS_START_NODE);
                         Line newLine = new Line(numberOfCreatedNodes, getNodeByPoint(x, y));
                         lines.add(newLine);
                         numberOfCreatedNodes++;
