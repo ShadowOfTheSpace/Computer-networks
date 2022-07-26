@@ -1,0 +1,6 @@
+public enum Modes {
+    CREATING_NODES,
+    CREATING_LINES,
+    FINDING_PATH,
+    FINDING_SHORTEST_PATH_TREE
+}
