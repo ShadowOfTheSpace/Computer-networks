@@ -98,6 +98,7 @@ public class MainPanel extends JPanel {
                     if (getNodeByPoint(x, y) != null) {
                         Line newLine = new Line(numberOfCreatedNodes, getNodeByPoint(x, y));
                         lines.add(newLine);
+                        numberOfCreatedNodes++;
                     }
                 }
                 repaint();
