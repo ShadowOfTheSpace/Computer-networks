@@ -40,7 +40,7 @@ public class MainPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    nodes.forEach(node -> node.setStatus(ElementStatus.NONE));
+                    setStatusForAllNodes(ElementStatus.NONE);
                 } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     Window.darkModeEnabled = !Window.darkModeEnabled;
                     Window.menuPanel.changeTheme();
@@ -58,10 +58,10 @@ public class MainPanel extends JPanel {
                 if (mode == Modes.CREATING_NODES) {
                     Node currentNode = getNodeByPoint(x, y);
                     if (currentNode == null) {
-                        currentNode = getNodeByStatus(ElementStatus.NODE_IS_MOVABLE);
+                        currentNode = getNodeOrNullByStatus(ElementStatus.NODE_IS_MOVABLE);
                     }
-                    if (currentNode != null && currentNode.getStatus() != ElementStatus.NONE) {
-                        currentNode.setStatus(ElementStatus.NODE_IS_MOVABLE);
+                    if (currentNode != null && !currentNode.hasStatus(ElementStatus.NONE)) {
+                        currentNode.setElementStatus(ElementStatus.NODE_IS_MOVABLE);
                         int oldX = currentNode.getX(), oldY = currentNode.getY();
                         currentNode.setCoordinates(x, y);
                         if (hasIntersection(currentNode)) {
@@ -69,17 +69,17 @@ public class MainPanel extends JPanel {
                         }
                     }
                 } else if (mode == Modes.CREATING_LINES) {
-                    lines
-                            .stream()
-                            .filter(line -> line.getStatus() == ElementStatus.LINE_STILL_DRAWING)
-                            .findFirst().ifPresent(line -> line.setCursorCoordinates(x, y));
-                    Node currentNode = getNodeByPoint(x, y);
-                    if (currentNode != null && currentNode.getStatus() != ElementStatus.NODE_IS_START_NODE) {
-                        currentNode.setStatus(ElementStatus.NODE_CAN_BE_END_NODE);
-                    } else {
-                        currentNode = getNodeByStatus(ElementStatus.NODE_CAN_BE_END_NODE);
-                        if (currentNode != null) {
-                            currentNode.setStatus(ElementStatus.NONE);
+                    Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
+                    if (currentLine != null) {
+                        currentLine.setCursorCoordinates(x, y);
+                        Node currentNode = getNodeByPoint(x, y);
+                        if (currentNode != null && !currentNode.hasStatus(ElementStatus.NODE_IS_START_NODE)) {
+                            currentNode.setElementStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                        } else {
+                            currentNode = getNodeOrNullByStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                            if (currentNode != null) {
+                                currentNode.setElementStatus(ElementStatus.NONE);
+                            }
                         }
                     }
                 }
@@ -98,15 +98,15 @@ public class MainPanel extends JPanel {
                         numberOfCreatedNodes++;
                     } else {
                         Node currentNode = getNodeByPoint(x, y);
-                        if (currentNode != null && currentNode.getStatus() == ElementStatus.NONE) {
-                            nodes.forEach(node -> node.setStatus(ElementStatus.NONE));
-                            currentNode.setStatus(ElementStatus.ACTIVE);
+                        if (currentNode != null && currentNode.hasStatus(ElementStatus.NONE)) {
+                            setStatusForAllNodes(ElementStatus.NONE);
+                            currentNode.setElementStatus(ElementStatus.ACTIVE);
                         }
                     }
                 } else if (mode == Modes.CREATING_LINES) {
                     Node currentNode = getNodeByPoint(x, y);
                     if (currentNode != null) {
-                        currentNode.setStatus(ElementStatus.NODE_IS_START_NODE);
+                        currentNode.setElementStatus(ElementStatus.NODE_IS_START_NODE);
                         Line newLine = new Line(numberOfCreatedNodes, getNodeByPoint(x, y));
                         lines.add(newLine);
                         numberOfCreatedNodes++;
@@ -120,25 +120,27 @@ public class MainPanel extends JPanel {
                 int x = e.getX(), y = e.getY();
                 if (mode == Modes.CREATING_NODES) {
                     Node currentNode = getNodeByPoint(x, y);
-                    if (currentNode != null && currentNode.getStatus() == ElementStatus.NODE_IS_MOVABLE) {
-                        currentNode.setStatus(ElementStatus.ACTIVE);
+                    if (currentNode != null && currentNode.hasStatus(ElementStatus.NODE_IS_MOVABLE)) {
+                        currentNode.setElementStatus(ElementStatus.ACTIVE);
                     }
                 }
                 if (mode == Modes.CREATING_LINES) {
                     Node currentNode = getNodeByPoint(x, y);
                     if (currentNode != null) {
-                        Line currentLine = lines.stream().filter(line -> line.getStatus() == ElementStatus.LINE_STILL_DRAWING).findFirst().orElse(null);
+                        Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
                         if (currentLine != null) {
                             if (!currentLine.getStartNode().equals(currentNode)) {
                                 currentLine.setEndNodeAndLength(currentNode, 1);
-                                currentLine.setStatus(ElementStatus.NONE);
+                                currentLine.setElementStatus(ElementStatus.NONE);
+                                currentNode.addLine(currentLine);
                             } else {
                                 lines.remove(currentLine);
                             }
                         }
                     } else {
-                        lines.removeIf(line -> line.getStatus() == ElementStatus.LINE_STILL_DRAWING);
+                        lines.removeIf(line -> line.hasStatus(ElementStatus.LINE_STILL_DRAWING));
                     }
+                    setStatusForAllNodes(ElementStatus.NONE);
                 }
                 repaint();
             }
@@ -163,8 +165,16 @@ public class MainPanel extends JPanel {
         return false;
     }
 
-    private Node getNodeByStatus(ElementStatus status) {
-        return nodes.stream().filter(node -> node.getStatus() == status).findAny().orElse(null);
+    private void setStatusForAllNodes(ElementStatus elementStatus) {
+        nodes.forEach(node -> node.setElementStatus(elementStatus));
+    }
+
+    private Line getLineOrNullByStatus(ElementStatus elementStatus) {
+        return lines.stream().filter(element -> element.hasStatus(elementStatus)).findFirst().orElse(null);
+    }
+
+    private Node getNodeOrNullByStatus(ElementStatus status) {
+        return nodes.stream().filter(node -> node.hasStatus(status)).findFirst().orElse(null);
     }
 
     private Node getNodeByPoint(int x, int y) {

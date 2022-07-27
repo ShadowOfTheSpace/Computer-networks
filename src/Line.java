@@ -1,41 +1,18 @@
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.util.Objects;
 
-public class Line implements Drawable {
-    private final int id;
-    private String name;
+public class Line extends Element {
     private final Node startNode;
     private Node endNode;
     private int cursorX, cursorY;
     private int length;
-    private ElementStatus status;
-
-    public void setStatus(ElementStatus status) {
-        this.status = status;
-    }
-
-    public ElementStatus getStatus() {
-        return status;
-    }
 
     public Line(int id, Node startNode) {
-        this.id = id;
+        super(id, "", ElementStatus.LINE_STILL_DRAWING);
         this.startNode = startNode;
         this.cursorX = startNode.getX();
         this.cursorY = startNode.getY();
-        this.status = ElementStatus.LINE_STILL_DRAWING;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Node getStartNode() {
@@ -52,15 +29,8 @@ public class Line implements Drawable {
 
     public void setEndNodeAndLength(Node endNode, int length) {
         this.endNode = endNode;
+        this.elementName = startNode.elementName + "-" + endNode.elementName;
         this.length = length;
-    }
-
-    public int getCursorX() {
-        return cursorX;
-    }
-
-    public int getCursorY() {
-        return cursorY;
     }
 
     public void setCursorCoordinates(int cursorX, int cursorY) {
@@ -72,7 +42,6 @@ public class Line implements Drawable {
     public void draw(Graphics2D graphics2D) {
         Line2D newLine;
         if (endNode == null) {
-
             newLine = new Line2D.Double(startNode.getX(), startNode.getY(), cursorX, cursorY);
         } else {
             newLine = new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
@@ -80,5 +49,18 @@ public class Line implements Drawable {
         graphics2D.setColor(Color.BLACK);
         graphics2D.setStroke(new BasicStroke(5));
         graphics2D.draw(newLine);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return startNode.equals(line.startNode) && Objects.equals(endNode, line.endNode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startNode, endNode);
     }
 }
