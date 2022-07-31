@@ -74,6 +74,10 @@ public class Node extends Element {
         return new ArrayList<>(lines);
     }
 
+    public boolean lineIsPresent(Line line){
+        return this.lines.contains(line);
+    }
+
     public void addLine(Line line) {
         lines.add(line);
     }
@@ -85,6 +89,9 @@ public class Node extends Element {
         graphics2D.setColor(elementStatusColorMap.get(this.elementStatus));
         graphics2D.setStroke(new BasicStroke(3));
         graphics2D.draw(this.getEllipse());
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
+        graphics2D.drawString(this.elementName, this.x, this.y);
     }
 
     @Override

@@ -16,12 +16,12 @@ public class Window extends JFrame {
 
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.weightx = 5.0 / 6.0;
+        gridBagConstraints.weightx = 0.7;
         gridBagConstraints.weighty = 1;
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         this.add(mainPanel, gridBagConstraints);
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.weightx = 1.0 / 6.0;
+        gridBagConstraints.weightx = 0.2;
         this.add(menuPanel, gridBagConstraints);
         this.setVisible(true);
     }

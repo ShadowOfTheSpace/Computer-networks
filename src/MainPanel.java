@@ -92,7 +92,7 @@ public class MainPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
                 if (mode == Modes.CREATING_NODES) {
-                    Node newNode = new Node(numberOfCreatedNodes, x, y, "A");
+                    Node newNode = new Node(numberOfCreatedNodes, x, y, NodeNameGenerator.generateName(numberOfCreatedNodes));
                     if (!hasIntersection(newNode)) {
                         nodes.add(newNode);
                         numberOfCreatedNodes++;

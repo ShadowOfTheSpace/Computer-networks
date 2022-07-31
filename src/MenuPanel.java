@@ -9,7 +9,7 @@ public class MenuPanel extends JPanel {
         changeTheme();
     }
 
-    public void changeTheme(){
+    public void changeTheme() {
         this.setBackground(Window.darkModeEnabled ? darkBackground : lightBackground);
     }
 }
