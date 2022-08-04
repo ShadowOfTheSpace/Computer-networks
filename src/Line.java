@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.util.Objects;
 
@@ -27,6 +28,7 @@ public class Line extends Element {
         return length;
     }
 
+
     public void setEndNodeAndLength(Node endNode, int length) {
         this.endNode = endNode;
         this.elementName = startNode.elementName + "-" + endNode.elementName;
@@ -38,6 +40,20 @@ public class Line extends Element {
         this.cursorY = cursorY;
     }
 
+    public void removeFromNodes(){
+        startNode.removeLine(this);
+        endNode.removeLine(this);
+    }
+    public Line2D getLine2D() {
+        return new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
+    }
+
+    @Override
+    public boolean containsPoint(int x, int y) {
+        Ellipse2D currentPoint = new Ellipse2D.Double(x - 10 / 2.0, y - 10 / 2.0, 10, 10);
+        return this.getLine2D().intersects(currentPoint.getBounds2D());
+    }
+
     @Override
     public void draw(Graphics2D graphics2D) {
         Line2D newLine;
@@ -46,9 +62,24 @@ public class Line extends Element {
         } else {
             newLine = new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
         }
-        graphics2D.setColor(Color.BLACK);
-        graphics2D.setStroke(new BasicStroke(5));
-        graphics2D.draw(newLine);
+        if (this.hasStatus(ElementStatus.NONE)) {
+            graphics2D.setColor(Color.BLACK);
+            graphics2D.setStroke(new BasicStroke(5));
+            graphics2D.draw(newLine);
+        } else if (this.hasStatus(ElementStatus.ACTIVE)) {
+            graphics2D.setColor(Color.ORANGE);
+            graphics2D.setStroke(new BasicStroke(11));
+            graphics2D.draw(newLine);
+            graphics2D.setColor(Color.BLACK);
+            graphics2D.setStroke(new BasicStroke(5));
+            graphics2D.draw(newLine);
+        } else {
+            graphics2D.setColor(Color.BLACK);
+            graphics2D.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                    1, new float[]{20}, 1));
+            graphics2D.draw(newLine);
+
+        }
     }
 
     @Override
@@ -56,11 +87,13 @@ public class Line extends Element {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return startNode.equals(line.startNode) && Objects.equals(endNode, line.endNode);
+        return this.startNode.equals(line.startNode) && this.endNode.equals(line.endNode) ||
+                this.startNode.equals(line.endNode) && this.endNode.equals(line.startNode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startNode, endNode);
+        return 0;
+//        return Objects.hash(startNode, endNode);
     }
 }

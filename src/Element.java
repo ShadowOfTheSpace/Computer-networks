@@ -27,6 +27,8 @@ public abstract class Element implements Drawable{
         return elementStatus;
     }
 
+    public abstract boolean containsPoint(int x, int y);
+
     public void setElementStatus(ElementStatus elementStatus) {
         this.elementStatus = elementStatus;
     }

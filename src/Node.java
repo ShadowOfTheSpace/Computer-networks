@@ -3,7 +3,6 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class Node extends Element {
@@ -62,6 +61,7 @@ public class Node extends Element {
         return !firstArea.isEmpty();
     }
 
+    @Override
     public boolean containsPoint(int x, int y) {
         return new Area(this.getEllipse()).contains(x, y);
     }
@@ -74,12 +74,20 @@ public class Node extends Element {
         return new ArrayList<>(lines);
     }
 
-    public boolean lineIsPresent(Line line){
+    public boolean hasLine(Line line) {
         return this.lines.contains(line);
     }
 
-    public void addLine(Line line) {
-        lines.add(line);
+    public boolean addLine(Line line) {
+        if (!hasLine(line)) {
+            return lines.add(line);
+        } else {
+            return false;
+        }
+    }
+
+    public void removeLine(Line line) {
+        lines.remove(line);
     }
 
     @Override
@@ -91,7 +99,7 @@ public class Node extends Element {
         graphics2D.draw(this.getEllipse());
         graphics2D.setColor(Color.BLACK);
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
-        graphics2D.drawString(this.elementName, this.x, this.y);
+        graphics2D.drawString(this.elementName + this.lines.size(), this.x, this.y);
     }
 
     @Override
