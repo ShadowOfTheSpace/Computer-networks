@@ -9,7 +9,7 @@ public class Node extends Element {
     private int x, y;
     private boolean trustFactor;
     private final int sizeOfNode = 50;
-
+    private final String ipAddress;
 
     private final ArrayList<Line> lines = new ArrayList<>();
     private static final HashMap<ElementStatus, Color> elementStatusColorMap = new HashMap<>();
@@ -21,11 +21,12 @@ public class Node extends Element {
         elementStatusColorMap.put(ElementStatus.NODE_IS_MOVABLE, Color.ORANGE);
     }
 
-    public Node(int id, int x, int y, String nodeName) {
-        super(id, nodeName, ElementStatus.NONE);
+    public Node(int id, int x, int y) {
+        super(id, NodeNameGenerator.generateName(id), ElementStatus.NONE);
         this.x = x;
         this.y = y;
         this.trustFactor = true;
+        this.ipAddress = RandomIPAddressGenerator.getIP();
     }
 
     public void setCoordinates(int x, int y) {
@@ -99,7 +100,7 @@ public class Node extends Element {
         graphics2D.draw(this.getEllipse());
         graphics2D.setColor(Color.BLACK);
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
-        graphics2D.drawString(this.elementName + this.lines.size(), this.x, this.y);
+        graphics2D.drawString(this.ipAddress, (int) this.getEllipse().getX(), (int) this.getEllipse().getY());
     }
 
     @Override
