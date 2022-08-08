@@ -11,8 +11,8 @@ public class MainPanel extends JPanel {
     private boolean imagesAreReady = false;
     private static Image darkThemeMap;
     private static Image lightThemeMap;
-    private static final Color darkBackground = Color.DARK_GRAY;
-    private static final Color lightBackground = Color.decode("#D9E1F2");
+    private static final Color DARK_BACKGROUND = Color.DARK_GRAY;
+    private static final Color LIGHT_BACKGROUND = Color.decode("#D9E1F2");
     private static int numberOfCreatedNodes = 0;
     private static int numberOfCreatedLines = 0;
     private static final ArrayList<Node> nodes = new ArrayList<>();
@@ -25,7 +25,6 @@ public class MainPanel extends JPanel {
         modesMap.put(KeyEvent.VK_2, Modes.CREATING_LINES);
         modesMap.put(KeyEvent.VK_3, Modes.FINDING_PATH);
         modesMap.put(KeyEvent.VK_4, Modes.FINDING_SHORTEST_PATH_TREE);
-
         try {
             darkThemeMap = ImageIO.read(new File("images/darkThemeMap.png"));
             lightThemeMap = ImageIO.read(new File("images/lightThemeMap.png"));
@@ -230,7 +229,7 @@ public class MainPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics2D.setColor(Window.darkModeEnabled ? darkBackground : lightBackground);
+        graphics2D.setColor(Window.darkModeEnabled ? DARK_BACKGROUND : LIGHT_BACKGROUND);
         graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
         graphics2D.drawImage(getMap(), 0, 0, null);
         drawAllLines(graphics2D);

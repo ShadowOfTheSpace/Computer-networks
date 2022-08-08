@@ -12,8 +12,8 @@ public class NodeNameGenerator {
             }
             nodeNumber /= 26;
         } while (nodeNumber > 0);
-        StringBuilder reversedStr = new StringBuilder(resultString.toString());
-        reversedStr.reverse();
-        return reversedStr.toString();
+        return new StringBuilder(resultString.toString())
+                .reverse()
+                .toString();
     }
 }

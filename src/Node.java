@@ -8,7 +8,7 @@ import java.util.Objects;
 public class Node extends Element {
     private int x, y;
     private boolean trustFactor;
-    private final int sizeOfNode = 50;
+    private final int SIZE_OF_NODE = 50;
     private final String ipAddress;
 
     private final ArrayList<Line> lines = new ArrayList<>();
@@ -54,10 +54,8 @@ public class Node extends Element {
         if (this.equals(node)) {
             return false;
         }
-        Ellipse2D firstEllipse = this.getEllipse();
-        Ellipse2D secondEllipse = node.getEllipse();
-        Area firstArea = new Area(firstEllipse);
-        Area secondArea = new Area(secondEllipse);
+        Area firstArea = new Area(this.getEllipse());
+        Area secondArea = new Area(node.getEllipse());
         firstArea.intersect(secondArea);
         return !firstArea.isEmpty();
     }
@@ -68,7 +66,7 @@ public class Node extends Element {
     }
 
     public Ellipse2D getEllipse() {
-        return new Ellipse2D.Double(this.x - sizeOfNode / 2.0, this.y - sizeOfNode / 2.0, sizeOfNode, sizeOfNode);
+        return new Ellipse2D.Double(this.x - SIZE_OF_NODE / 2.0, this.y - SIZE_OF_NODE / 2.0, SIZE_OF_NODE, SIZE_OF_NODE);
     }
 
     public ArrayList<Line> getLines() {
