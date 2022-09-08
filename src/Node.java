@@ -1,6 +1,9 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -8,18 +11,12 @@ import java.util.Objects;
 public class Node extends Element {
     private int x, y;
     private boolean trustFactor;
-    private final int SIZE_OF_NODE = 50;
+    private static final int SIZE_OF_NODE = 60;
     private final String ipAddress;
 
-    private final ArrayList<Line> lines = new ArrayList<>();
-    private static final HashMap<ElementStatus, Color> elementStatusColorMap = new HashMap<>();
 
-    static {
-        elementStatusColorMap.put(ElementStatus.ACTIVE, Color.ORANGE);
-        elementStatusColorMap.put(ElementStatus.NODE_IS_START_NODE, Color.GREEN.brighter());
-        elementStatusColorMap.put(ElementStatus.NODE_CAN_BE_END_NODE, Color.RED);
-        elementStatusColorMap.put(ElementStatus.NODE_IS_MOVABLE, Color.ORANGE);
-    }
+    private final ArrayList<Line> lines = new ArrayList<>();
+    private static final HashMap<ElementStatus, Image> elementStatusColorMap = new HashMap<>();
 
     public Node(int id, int x, int y) {
         super(id, NodeNameGenerator.generateName(id), ElementStatus.NONE);
@@ -40,6 +37,10 @@ public class Node extends Element {
 
     public int getY() {
         return y;
+    }
+
+    public static int getSizeOfNode() {
+        return SIZE_OF_NODE;
     }
 
     public boolean isTrustful() {
@@ -92,13 +93,14 @@ public class Node extends Element {
     @Override
     public void draw(Graphics2D graphics2D) {
         graphics2D.setColor(Color.BLUE);
-        graphics2D.fill(this.getEllipse());
-        graphics2D.setColor(elementStatusColorMap.get(this.elementStatus));
+//        graphics2D.fill(this.getEllipse());
+        graphics2D.drawImage(NodeImages.getImage(Window.darkModeEnabled, this.trustFactor, this.elementStatus), (int) getEllipse().getX(), (int) getEllipse().getY(), null);
+//        graphics2D.setColor(elementStatusColorMap.get(this.elementStatus));
         graphics2D.setStroke(new BasicStroke(3));
-        graphics2D.draw(this.getEllipse());
+//        graphics2D.draw(this.getEllipse());
         graphics2D.setColor(Color.BLACK);
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
-        graphics2D.drawString(this.ipAddress, (int) this.getEllipse().getX(), (int) this.getEllipse().getY());
+        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX(), (int) this.getEllipse().getY());
     }
 
     @Override

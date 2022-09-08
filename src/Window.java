@@ -16,7 +16,7 @@ public class Window extends JFrame {
 
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.weightx = 0.7;
+        gridBagConstraints.weightx = 0.8;
         gridBagConstraints.weighty = 1;
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         this.add(mainPanel, gridBagConstraints);

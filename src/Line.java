@@ -40,12 +40,17 @@ public class Line extends Element {
         this.cursorY = cursorY;
     }
 
-    public void removeFromNodes(){
+    public void removeFromNodes() {
         startNode.removeLine(this);
         endNode.removeLine(this);
     }
+
     public Line2D getLine2D() {
-        return new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
+        if (endNode != null) {
+            return new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
+        } else {
+            return new Line2D.Double(startNode.getX(), startNode.getY(), cursorX, cursorY);
+        }
     }
 
     @Override
@@ -87,13 +92,12 @@ public class Line extends Element {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return this.startNode.equals(line.startNode) && this.endNode.equals(line.endNode) ||
-                this.startNode.equals(line.endNode) && this.endNode.equals(line.startNode);
+        return this.startNode.equals(line.startNode) && Objects.equals(this.endNode, line.endNode) ||
+                this.startNode.equals(line.endNode) && Objects.equals(this.endNode, line.startNode);
     }
 
     @Override
     public int hashCode() {
-        return 0;
-//        return Objects.hash(startNode, endNode);
+        return Objects.hash(startNode, endNode);
     }
 }

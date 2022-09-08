@@ -69,35 +69,37 @@ public class MainPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
-                if (mode == Modes.CREATING_NODES) {
-                    Node currentNode = getNodeByPoint(x, y);
-                    if (currentNode == null) {
-                        currentNode = getNodeOrNullByStatus(ElementStatus.NODE_IS_MOVABLE);
-                    }
-                    if (currentNode != null && !currentNode.hasStatus(ElementStatus.NONE)) {
-                        currentNode.setElementStatus(ElementStatus.NODE_IS_MOVABLE);
-                        int oldX = currentNode.getX(), oldY = currentNode.getY();
-                        currentNode.setCoordinates(x, y);
-                        if (hasIntersection(currentNode)) {
-                            currentNode.setCoordinates(oldX, oldY);
-                        }
-                    }
-                } else if (mode == Modes.CREATING_LINES) {
-                    Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
-                    if (currentLine != null) {
-                        currentLine.setCursorCoordinates(x, y);
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (mode == Modes.CREATING_NODES) {
                         Node currentNode = getNodeByPoint(x, y);
-                        if (currentNode != null && !currentNode.hasStatus(ElementStatus.NODE_IS_START_NODE)) {
-                            currentNode.setElementStatus(ElementStatus.NODE_CAN_BE_END_NODE);
-                        } else {
-                            currentNode = getNodeOrNullByStatus(ElementStatus.NODE_CAN_BE_END_NODE);
-                            if (currentNode != null) {
-                                currentNode.setElementStatus(ElementStatus.NONE);
+                        if (currentNode == null) {
+                            currentNode = getNodeOrNullByStatus(ElementStatus.NODE_IS_MOVABLE);
+                        }
+                        if (currentNode != null && !currentNode.hasStatus(ElementStatus.NONE)) {
+                            currentNode.setElementStatus(ElementStatus.NODE_IS_MOVABLE);
+                            int oldX = currentNode.getX(), oldY = currentNode.getY();
+                            currentNode.setCoordinates(x, y);
+                            if (hasIntersection(currentNode)) {
+                                currentNode.setCoordinates(oldX, oldY);
+                            }
+                        }
+                    } else if (mode == Modes.CREATING_LINES) {
+                        Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
+                        if (currentLine != null) {
+                            currentLine.setCursorCoordinates(x, y);
+                            Node currentNode = getNodeByPoint(x, y);
+                            if (currentNode != null && !currentNode.hasStatus(ElementStatus.NODE_IS_START_NODE)) {
+                                currentNode.setElementStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                            } else {
+                                currentNode = getNodeOrNullByStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                                if (currentNode != null) {
+                                    currentNode.setElementStatus(ElementStatus.NONE);
+                                }
                             }
                         }
                     }
+                    repaint();
                 }
-                repaint();
             }
         });
 
@@ -105,61 +107,75 @@ public class MainPanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
-                if (mode == Modes.CREATING_NODES) {
-                    Node newNode = new Node(numberOfCreatedNodes + 1, x, y);
-                    if (!hasIntersection(newNode)) {
-                        nodes.add(newNode);
-                        numberOfCreatedNodes++;
-                    } else {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (mode == Modes.CREATING_NODES) {
+                        Node activeNode = getNodeOrNullByStatus(ElementStatus.ACTIVE);
+                        if (activeNode == null || getNodeByPoint(x, y) != null) {
+                            Node newNode = new Node(numberOfCreatedNodes + 1, x, y);
+                            if (!hasIntersection(newNode)) {
+                                nodes.add(newNode);
+                                numberOfCreatedNodes++;
+                            } else {
+                                Node currentNode = getNodeByPoint(x, y);
+                                if (currentNode != null && currentNode.hasStatus(ElementStatus.NONE)) {
+                                    makeElementActive(currentNode);
+                                }
+                            }
+                        } else {
+                            activeNode.setElementStatus(ElementStatus.NONE);
+                        }
+                    } else if (mode == Modes.CREATING_LINES) {
                         Node currentNode = getNodeByPoint(x, y);
-                        if (currentNode != null && currentNode.hasStatus(ElementStatus.NONE)) {
-                            makeElementActive(currentNode);
+                        Line currentLine = getLineByPoint(x, y);
+                        if (currentNode != null) {
+                            currentNode.setElementStatus(ElementStatus.NODE_IS_START_NODE);
+                            Line newLine = new Line(numberOfCreatedLines, currentNode);
+                            lines.add(newLine);
+                            numberOfCreatedLines++;
+                        } else if (currentLine != null && currentLine.hasStatus(ElementStatus.NONE)) {
+                            makeElementActive(currentLine);
                         }
                     }
-                } else if (mode == Modes.CREATING_LINES) {
-                    Node currentNode = getNodeByPoint(x, y);
-                    Line currentLine = getLineByPoint(x, y);
-                    if (currentNode != null) {
-                        currentNode.setElementStatus(ElementStatus.NODE_IS_START_NODE);
-                        Line newLine = new Line(numberOfCreatedLines, getNodeByPoint(x, y));
-                        lines.add(newLine);
-                        numberOfCreatedLines++;
-                    } else if (currentLine != null && currentLine.hasStatus(ElementStatus.NONE)) {
-                        makeElementActive(currentLine);
-                    }
+                    repaint();
                 }
-                repaint();
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
-                if (mode == Modes.CREATING_NODES) {
-                    Node currentNode = getNodeByPoint(x, y);
-                    if (currentNode != null && currentNode.hasStatus(ElementStatus.NODE_IS_MOVABLE)) {
-                        currentNode.setElementStatus(ElementStatus.ACTIVE);
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (mode == Modes.CREATING_NODES) {
+                        Node currentNode = getNodeByPoint(x, y);
+                        if (currentNode != null && currentNode.hasStatus(ElementStatus.NODE_IS_MOVABLE)) {
+                            currentNode.setElementStatus(ElementStatus.ACTIVE);
+                        }
                     }
-                }
-                if (mode == Modes.CREATING_LINES) {
+                    if (mode == Modes.CREATING_LINES) {
+                        Node currentNode = getNodeByPoint(x, y);
+                        if (currentNode != null) {
+                            Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
+                            if (currentLine != null) {
+                                if (!currentLine.getStartNode().equals(currentNode)) {
+                                    currentLine.setEndNodeAndLength(currentNode, 1);
+                                    currentLine.setElementStatus(ElementStatus.NONE);
+                                    if (!currentNode.addLine(currentLine) || !currentLine.getStartNode().addLine(currentLine)) {
+                                        lines.removeIf(line -> line.getId() == currentLine.getId());
+                                    }
+                                } else {
+                                    lines.remove(currentLine);
+                                }
+                            }
+                        } else {
+                            lines.removeIf(line -> line.hasStatus(ElementStatus.LINE_STILL_DRAWING));
+                        }
+                        if (getLineByPoint(x, y) == null || getNodeByPoint(x, y) != null) {
+                            setStatusForAllElements(ElementStatus.NONE);
+                        }
+                    }
+                } else if (SwingUtilities.isMiddleMouseButton(e)) {
                     Node currentNode = getNodeByPoint(x, y);
                     if (currentNode != null) {
-                        Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
-                        if (currentLine != null) {
-                            if (!currentLine.getStartNode().equals(currentNode)) {
-                                currentLine.setEndNodeAndLength(currentNode, 1);
-                                currentLine.setElementStatus(ElementStatus.NONE);
-                                if (!currentNode.addLine(currentLine) || !currentLine.getStartNode().addLine(currentLine)) {
-                                    lines.removeIf(line -> line.getId() == currentLine.getId());
-                                }
-                            } else {
-                                lines.remove(currentLine);
-                            }
-                        }
-                    } else {
-                        lines.removeIf(line -> line.hasStatus(ElementStatus.LINE_STILL_DRAWING));
-                    }
-                    if (getLineByPoint(x, y) == null || getNodeByPoint(x, y) != null) {
-                        setStatusForAllElements(ElementStatus.NONE);
+                        currentNode.changeTrustFactor();
                     }
                 }
                 repaint();
