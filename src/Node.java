@@ -92,14 +92,15 @@ public class Node extends Element {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        graphics2D.setColor(Color.BLUE);
-//        graphics2D.fill(this.getEllipse());
         graphics2D.drawImage(NodeImages.getImage(Window.darkModeEnabled, this.trustFactor, this.elementStatus), (int) getEllipse().getX(), (int) getEllipse().getY(), null);
-//        graphics2D.setColor(elementStatusColorMap.get(this.elementStatus));
         graphics2D.setStroke(new BasicStroke(3));
-//        graphics2D.draw(this.getEllipse());
-        graphics2D.setColor(Color.BLACK);
+        graphics2D.setColor(Window.darkModeEnabled ? Color.DARK_GRAY : Color.decode("#D9E1F2"));
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
+        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() + 3, (int) this.getEllipse().getY() - 3);
+        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() + 3, (int) this.getEllipse().getY() + 3);
+        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() - 3, (int) this.getEllipse().getY() - 3);
+        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() - 3, (int) this.getEllipse().getY() + 3);
+        graphics2D.setColor(Window.darkModeEnabled ? Color.WHITE : Color.BLACK);
         graphics2D.drawString(this.elementName, (int) this.getEllipse().getX(), (int) this.getEllipse().getY());
     }
 

@@ -5,27 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class NodeImages {
-    private static Image trustedNodeImageLight;
-    private static Image trustedNodeImageDark;
-    private static Image nonTrustedNodeImageLight;
-    private static Image nonTrustedNodeImageDark;
-
-    private static Image trustedNodeImageDarkActive;
-    private static Image trustedNodeImageLightActive;
-    private static Image nonTrustedNodeImageDarkActive;
-    private static Image nonTrustedNodeImageLightActive;
-
-    private static Image nonTrustedNodeImageDarkStart;
-    private static Image nonTrustedNodeImageDarkEnd;
-    private static Image nonTrustedNodeImageLightStart;
-    private static Image nonTrustedNodeImageLightEnd;
-
-    private static Image trustedNodeImageDarkStart;
-    private static Image trustedNodeImageDarkEnd;
-    private static Image trustedNodeImageLightStart;
-    private static Image trustedNodeImageLightEnd;
-
-
     private static HashMap<ElementStatus, Image> lightModeTrustedNodesImage = new HashMap<>();
     private static HashMap<ElementStatus, Image> darkModeTrustedNodesImage = new HashMap<>();
     private static HashMap<ElementStatus, Image> lightModeNonTrustedNodesImage = new HashMap<>();
