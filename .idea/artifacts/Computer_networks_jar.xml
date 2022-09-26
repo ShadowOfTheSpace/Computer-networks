@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Computer-networks:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Computer_networks_jar</output-path>
+    <root id="archive" name="Computer-networks.jar">
+      <element id="module-output" name="Computer-networks" />
+    </root>
+  </artifact>
+</component>

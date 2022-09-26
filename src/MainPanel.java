@@ -17,7 +17,7 @@ public class MainPanel extends JPanel {
     private static int numberOfCreatedLines = 0;
     private static final ArrayList<Node> nodes = new ArrayList<>();
     private static final ArrayList<Line> lines = new ArrayList<>();
-    private static Modes mode = Modes.CREATING_NODES;
+    public static Modes mode = Modes.CREATING_NODES;
     private static final HashMap<Integer, Modes> modesMap = new HashMap<>();
 
     static {
@@ -99,6 +99,24 @@ public class MainPanel extends JPanel {
                         }
                     }
                     repaint();
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int x = e.getX(), y = e.getY();
+                if(mode == Modes.CREATING_NODES){
+                    if (getNodeByPoint(x, y) != null) {
+                        setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    }else {
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
+                } else if (mode == Modes.CREATING_LINES) {
+                    if (getNodeByPoint(x, y) != null || getLineByPoint(x, y) != null) {
+                        setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    } else {
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
                 }
             }
         });
@@ -203,6 +221,7 @@ public class MainPanel extends JPanel {
         return Window.darkModeEnabled ? darkThemeMap : lightThemeMap;
     }
 
+
     private boolean hasIntersection(Node newNode) {
         for (Node node : nodes) {
             if (newNode.isIntersect(node)) {
@@ -239,6 +258,10 @@ public class MainPanel extends JPanel {
 
     private void drawAllLines(Graphics2D graphics2D) {
         lines.forEach(line -> line.draw(graphics2D));
+    }
+
+    public static Color getBackgroundColor() {
+        return Window.darkModeEnabled ? DARK_BACKGROUND : LIGHT_BACKGROUND;
     }
 
     @Override

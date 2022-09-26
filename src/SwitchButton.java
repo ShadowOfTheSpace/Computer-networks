@@ -48,6 +48,7 @@ public class SwitchButton extends JComponent {
                     Window.darkModeEnabled = !Window.darkModeEnabled;
                     Window.menuPanel.changeTheme();
                     Window.mainPanel.paintImmediately(0, 0, Window.mainPanel.getWidth(), Window.mainPanel.getHeight());
+
                     timer.start();
                 }
             }
