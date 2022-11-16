@@ -54,7 +54,7 @@ public class MainPanel extends JPanel {
                         deleteLine(lineToDelete);
                     }
 
-                } else {
+                 } else {
                     mode = modesMap.getOrDefault(e.getKeyCode(), Modes.CREATING_NODES);
                     Line line = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
                     if (line != null) {
@@ -105,10 +105,10 @@ public class MainPanel extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
-                if(mode == Modes.CREATING_NODES){
+                if (mode == Modes.CREATING_NODES) {
                     if (getNodeByPoint(x, y) != null) {
                         setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    }else {
+                    } else {
                         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     }
                 } else if (mode == Modes.CREATING_LINES) {
@@ -194,6 +194,9 @@ public class MainPanel extends JPanel {
                     Node currentNode = getNodeByPoint(x, y);
                     if (currentNode != null) {
                         currentNode.changeTrustFactor();
+                    } else if (getLineByPoint(x, y) != null) {
+                        Line currentLine = getLineByPoint(x, y);
+                        currentLine.changeColor();
                     }
                 }
                 repaint();
@@ -270,6 +273,7 @@ public class MainPanel extends JPanel {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setColor(Window.darkModeEnabled ? DARK_BACKGROUND : LIGHT_BACKGROUND);
         graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
+//      TODO add optional grid to main panel
         graphics2D.drawImage(getMap(), 0, 0, null);
         drawAllLines(graphics2D);
         drawAllNodes(graphics2D);

@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class Line extends Element {
@@ -8,6 +9,27 @@ public class Line extends Element {
     private Node endNode;
     private int cursorX, cursorY;
     private int length;
+    private  Color darkLineColor = Color.WHITE;
+    private  Color lightLineColor = Color.BLACK;
+    private static HashMap<Color, Color> darkColorMap = new HashMap<>();
+    private static HashMap<Color, Color> lightColorMap = new HashMap<>();
+
+    static {
+        darkColorMap.put(Color.WHITE, Color.GREEN);
+        darkColorMap.put(Color.GREEN, Color.RED);
+        darkColorMap.put(Color.RED, new Color(0,0,0,0));
+        darkColorMap.put(new Color(0,0,0,0), Color.WHITE);
+
+        lightColorMap.put(Color.BLACK, Color.GREEN.darker());
+        lightColorMap.put(Color.GREEN.darker(), Color.RED.darker());
+        lightColorMap.put(Color.RED.darker(), new Color(0,0,0,0));
+        lightColorMap.put(new Color(0,0,0,0), Color.BLACK);
+    }
+
+    public void changeColor() {
+        darkLineColor = darkColorMap.get(darkLineColor);
+        lightLineColor = lightColorMap.get(lightLineColor);
+    }
 
     public Line(int id, Node startNode) {
         super(id, "", ElementStatus.LINE_STILL_DRAWING);
@@ -19,6 +41,7 @@ public class Line extends Element {
     public Node getStartNode() {
         return startNode;
     }
+
 
     public Node getEndNode() {
         return endNode;
@@ -68,18 +91,18 @@ public class Line extends Element {
             newLine = new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
         }
         if (this.hasStatus(ElementStatus.NONE)) {
-            graphics2D.setColor(Color.BLACK);
+            graphics2D.setColor(Window.darkModeEnabled ? darkLineColor : lightLineColor);
             graphics2D.setStroke(new BasicStroke(5));
             graphics2D.draw(newLine);
         } else if (this.hasStatus(ElementStatus.ACTIVE)) {
             graphics2D.setColor(Color.ORANGE);
             graphics2D.setStroke(new BasicStroke(11));
             graphics2D.draw(newLine);
-            graphics2D.setColor(Color.BLACK);
+            graphics2D.setColor(Window.darkModeEnabled ? darkLineColor : lightLineColor);
             graphics2D.setStroke(new BasicStroke(5));
             graphics2D.draw(newLine);
         } else {
-            graphics2D.setColor(Color.BLACK);
+            graphics2D.setColor(Window.darkModeEnabled ? darkLineColor : lightLineColor);
             graphics2D.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
                     1, new float[]{20}, 1));
             graphics2D.draw(newLine);

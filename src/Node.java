@@ -20,15 +20,16 @@ public class Node extends Element {
 
     public Node(int id, int x, int y) {
         super(id, NodeNameGenerator.generateName(id), ElementStatus.NONE);
-        this.x = x;
-        this.y = y;
+
+        this.x = Math.round(x / 10.f) * 10;
+        this.y = Math.round(y / 10.f) * 10;
         this.trustFactor = true;
         this.ipAddress = RandomIPAddressGenerator.getIP();
     }
 
     public void setCoordinates(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.x = Math.round(x / 10.f) * 10;
+        this.y = Math.round(y / 10.f) * 10;
     }
 
     public int getX() {

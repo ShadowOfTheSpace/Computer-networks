@@ -41,7 +41,7 @@ public class Window extends JFrame {
         menuPanel.add(clearButtonPanel);
         menuPanel.add(darkModeSwitchPanel);
         modeChooserLabelPanel.add(new MenuPanelLabel("Current working mode"));
-        modeChooserPanel.add(modeChooser);
+        modeChooserPanel.add(new CustomComboBox());
         clearButtonPanel.add(clearButton);
         darkModeSwitchPanel.add(new MenuPanelLabel("Lighting theme"));
         darkModeSwitchPanel.add(new SwitchButton());
