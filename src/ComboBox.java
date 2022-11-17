@@ -60,7 +60,7 @@ public class ComboBox<E> extends JComboBox<E> {
             public void paint(Graphics g) {
                 Graphics2D graphics2D= (Graphics2D) g;
                 this.setHorizontalAlignment(JLabel.CENTER);
-                this.setBackground(MainPanel.getBackgroundColor());
+                this.setBackground(Palette.getMainPanelBackground());
                 this.setForeground(Window.darkModeEnabled ? Color.WHITE : Color.BLACK);
 //                graphics2D.setColor(new Color(12,223,234,0));
 //                graphics2D.fillRoundRect(0,0,getWidth(),getHeight(),10,10);
@@ -76,7 +76,7 @@ public class ComboBox<E> extends JComboBox<E> {
     public void paint(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics2D.setColor(MainPanel.getBackgroundColor());
+        graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
         graphics2D.setColor(Window.darkModeEnabled ? Color.WHITE : Color.BLACK);
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));

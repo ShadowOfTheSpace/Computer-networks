@@ -11,8 +11,8 @@ public class Line extends Element {
     private int length;
     private  Color darkLineColor = Color.WHITE;
     private  Color lightLineColor = Color.BLACK;
-    private static HashMap<Color, Color> darkColorMap = new HashMap<>();
-    private static HashMap<Color, Color> lightColorMap = new HashMap<>();
+    private static final HashMap<Color, Color> darkColorMap = new HashMap<>();
+    private static final HashMap<Color, Color> lightColorMap = new HashMap<>();
 
     static {
         darkColorMap.put(Color.WHITE, Color.GREEN);

@@ -17,7 +17,6 @@ public class SwitchButton extends JComponent {
     private Timer timer;
     private static final Image moonIcon;
     private static final Image sunIcon;
-
     static {
         try {
             moonIcon = ImageIO.read(new File("images/moon.png")).getScaledInstance(SIZE_OF_CYCLE, SIZE_OF_CYCLE, Image.SCALE_SMOOTH);
@@ -28,8 +27,8 @@ public class SwitchButton extends JComponent {
     }
 
     public SwitchButton() {
-        this.setBackground(Color.decode("#FFAA1D"));
-        this.setForeground(Color.decode("#27173A"));
+        this.setBackground(Palette.DARK_SWITCH_BUTTON_BACKGROUND);
+        this.setForeground(Palette.LIGHT_SWITCH_BUTTON_BACKGROUND);
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -48,7 +47,6 @@ public class SwitchButton extends JComponent {
                     Window.darkModeEnabled = !Window.darkModeEnabled;
                     Window.menuPanel.changeTheme();
                     Window.mainPanel.paintImmediately(0, 0, Window.mainPanel.getWidth(), Window.mainPanel.getHeight());
-
                     timer.start();
                 }
             }
@@ -63,10 +61,10 @@ public class SwitchButton extends JComponent {
                     } else {
                         currentPosition = endPosition;
                         timer.stop();
-                        setBackground(Color.decode("#27173A"));
+                        setBackground(Palette.LIGHT_SWITCH_BUTTON_BACKGROUND);
                     }
                 } else {
-                    setBackground(Color.decode("#FFAA1D"));
+                    setBackground(Palette.DARK_SWITCH_BUTTON_BACKGROUND);
                     if (currentPosition > startPosition) {
                         currentPosition -= speed;
                         repaint();
@@ -85,20 +83,19 @@ public class SwitchButton extends JComponent {
     public void paint(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setColor(getBackground());
-
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int rectangleX = (this.getWidth() - WIDTH) / 2, rectangleY = (this.getHeight() - HEIGHT) / 2;
         graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
         graphics2D.setColor(this.getForeground());
         graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
-//        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-//        graphics2D.setColor(new Color(255, 255, 255, 25));
-//        graphics2D.fillOval(rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, SIZE_OF_CYCLE, SIZE_OF_CYCLE);
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+        graphics2D.setColor(new Color(255, 255, 255, 25));
+        graphics2D.fillOval(rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, SIZE_OF_CYCLE, SIZE_OF_CYCLE);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
-        graphics2D.drawImage(moonIcon, rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
+//        graphics2D.drawImage(moonIcon, rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - getAlpha()));
-        graphics2D.drawImage(sunIcon, rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
+//        graphics2D.drawImage(sunIcon, rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
     }
 
     private float getAlpha() {
