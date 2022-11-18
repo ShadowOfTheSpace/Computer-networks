@@ -2,21 +2,25 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
 
 public class SwitchButton extends JComponent {
-    private static final int WIDTH = 100;
+    private static final int WIDTH = 110;
     private static final int HEIGHT = 50;
     private static final int SIZE_OF_CYCLE = 40;
     private static final int ARC = 50;
-    private int startPosition = (HEIGHT - SIZE_OF_CYCLE) / 2;
-    private int endPosition = WIDTH - SIZE_OF_CYCLE - startPosition;
-    private int currentPosition = startPosition;
-    private int speed = 1;
-    private Timer timer;
+    private final int startPosition = (HEIGHT - SIZE_OF_CYCLE) / 2;
+    private final int endPosition = WIDTH - SIZE_OF_CYCLE - startPosition;
+    private float currentPosition = startPosition;
+    private static final float speed = 0.2f;
+    private final Timer timer;
     private static final Image moonIcon;
     private static final Image sunIcon;
+
+    private int rectangleX, rectangleY;
+
     static {
         try {
             moonIcon = ImageIO.read(new File("images/moon.png")).getScaledInstance(SIZE_OF_CYCLE, SIZE_OF_CYCLE, Image.SCALE_SMOOTH);
@@ -27,6 +31,7 @@ public class SwitchButton extends JComponent {
     }
 
     public SwitchButton() {
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setBackground(Palette.DARK_SWITCH_BUTTON_BACKGROUND);
         this.setForeground(Palette.LIGHT_SWITCH_BUTTON_BACKGROUND);
         this.addMouseMotionListener(new MouseMotionAdapter() {
@@ -73,32 +78,45 @@ public class SwitchButton extends JComponent {
                         timer.stop();
                     }
                 }
-
             }
         });
-
     }
+
+//    private boolean mouseInsideButton(int x, int y){
+//        Ellipse2D buttonArea = new Ellipse2D.Float(this.)
+//        return false;
+//    }
 
     @Override
     public void paint(Graphics g) {
+        this.rectangleX = (this.getWidth() - WIDTH) / 2;
+        this.rectangleY = (this.getHeight() - HEIGHT) / 2;
         Graphics2D graphics2D = (Graphics2D) g;
-        graphics2D.setColor(getBackground());
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        int rectangleX = (this.getWidth() - WIDTH) / 2, rectangleY = (this.getHeight() - HEIGHT) / 2;
+        graphics2D.setColor(Palette.getMenuPanelBackground());
+        graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
+        graphics2D.setColor(Palette.DARK_SWITCH_BUTTON_BACKGROUND);
         graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
+        graphics2D.setColor(Palette.LIGHT_SWITCH_BUTTON_BACKGROUND);
+        graphics2D.setStroke(new BasicStroke(2));
+        graphics2D.drawRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
-        graphics2D.setColor(this.getForeground());
+        graphics2D.setColor(Palette.LIGHT_SWITCH_BUTTON_BACKGROUND);
         graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
+        graphics2D.setColor(Palette.DARK_SWITCH_BUTTON_BACKGROUND);
+        graphics2D.drawRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-        graphics2D.setColor(new Color(255, 255, 255, 25));
-        graphics2D.fillOval(rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, SIZE_OF_CYCLE, SIZE_OF_CYCLE);
+        graphics2D.setColor(new Color(255, 255, 255, 255));
+        graphics2D.fillOval((int) (rectangleX + currentPosition), rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, SIZE_OF_CYCLE, SIZE_OF_CYCLE);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
-//        graphics2D.drawImage(moonIcon, rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
+        graphics2D.drawImage(moonIcon, (int) (rectangleX + currentPosition), rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - getAlpha()));
-//        graphics2D.drawImage(sunIcon, rectangleX + currentPosition, rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
+        graphics2D.drawImage(sunIcon, (int) (rectangleX + currentPosition), rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, null);
+
     }
 
     private float getAlpha() {
-        return (currentPosition - startPosition) / (float) (endPosition - startPosition);
+        float alpha = (currentPosition - startPosition) / (endPosition - startPosition);
+        return Math.max(0, Math.min(1, alpha));
     }
 }

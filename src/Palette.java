@@ -35,6 +35,9 @@ public class Palette {
         return Window.darkModeEnabled ? BUTTON_DARK_PRESS_BACKGROUND:BUTTON_LIGHT_PRESS_BACKGROUND;
     }
 
+    public static Color getInverseMainPanelBackground(){
+        return Window.darkModeEnabled ? MAIN_PANEL_LIGHT_BACKGROUND:MAIN_PANEL_DARK_BACKGROUND;
+    }
     public static Color getFontColor(){
         return Window.darkModeEnabled ? DARK_FONT_COLOR:LIGHT_FONT_COLOR;
     }

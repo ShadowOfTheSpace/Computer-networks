@@ -5,23 +5,24 @@ import javax.accessibility.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
-import javax.swing.plaf.basic.*;
 
 class RoundedCornerBorder extends AbstractBorder {
-    protected static final int ARC = 45;
+    protected static final int ARC = 40;
 
     @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        int r = ARC;
-
-        Area round = new Area(new RoundRectangle2D.Float(x, y, width, height, r, r));
+        Area round = new Area(new RoundRectangle2D.Float(x, y + 1, width + 20, height - 3, ARC, ARC));
         Area corner = new Area(new Rectangle2D.Float(x, y, width / 2.0f, height));
         corner.subtract(round);
         g2.setColor(Palette.getMainPanelBackground());
         g2.fill(corner);
-
+        g2.setColor(Palette.getFontColor());
+        g2.setStroke(new BasicStroke(3));
+        g2.drawLine(x + width - 1, 2, x + width - 1, y + height - 3);
+        g2.setStroke(new BasicStroke(2));
+        g2.draw(round);
         g2.dispose();
     }
 

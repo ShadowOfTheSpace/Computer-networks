@@ -16,6 +16,7 @@ public class MenuPanel extends JPanel {
         this.setBackground(Palette.getMenuPanelBackground());
         Window.clearButton.changeTheme();
         Window.modeChooser.changeTheme();
+        Window.metricChooser.changeTheme();
     }
 
     @Override

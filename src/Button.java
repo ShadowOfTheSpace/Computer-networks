@@ -21,6 +21,7 @@ public class Button extends JButton {
     public Button(String text) {
         super(text);
         this.setPreferredSize(new Dimension(250,60));
+//        this.setMaximumSize(new Dimension(250,60));
         this.setFont(new Font("Arial", Font.BOLD, 24));
         this.setFocusable(false);
         this.setContentAreaFilled(false);
