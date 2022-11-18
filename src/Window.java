@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class Window extends JFrame {
     static boolean darkModeEnabled = true;
@@ -33,7 +32,7 @@ public class Window extends JFrame {
         gridBagConstraints.weightx = 0.05;
         this.add(menuPanel, gridBagConstraints);
 
-        clearButton.addActionListener((event) -> mainPanel.clearAll());
+        clearButton.addActionListener((event) -> mainPanel.clear());
 
 
         menuPanel.setLayout(new GridBagLayout());

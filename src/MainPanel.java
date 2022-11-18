@@ -1,12 +1,10 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Ellipse2D;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class MainPanel extends JPanel {
     private static boolean mapIsVisible = false;
@@ -42,27 +40,12 @@ public class MainPanel extends JPanel {
                     Window.fullScreenEnabled = !Window.fullScreenEnabled;
                     ((JFrame) SwingUtilities.getWindowAncestor(Window.mainPanel)).setUndecorated(Window.fullScreenEnabled);
                     SwingUtilities.getWindowAncestor(Window.mainPanel).setVisible(true);
-                } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    Window.darkModeEnabled = !Window.darkModeEnabled;
-                    Window.menuPanel.changeTheme();
-                    paintImmediately(0, 0, getWidth(), getHeight());
                 } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                    Node nodeToDelete = getNodeOrNullByStatus(ElementStatus.ACTIVE);
-                    Line lineToDelete = getLineOrNullByStatus(ElementStatus.ACTIVE);
-                    if (nodeToDelete != null) {
-                        nodeToDelete.getLines().forEach(line -> deleteLine(line));
-                        nodes.remove(nodeToDelete);
-                    } else if (lineToDelete != null) {
-                        deleteLine(lineToDelete);
-                    }
-
-                } else {
-                    mode = modesMap.getOrDefault(e.getKeyCode(), Modes.CREATING_NODES);
-                    Line line = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
-                    if (line != null) {
-                        lines.removeIf(line1 -> line1.getId() == line.getId());
-                    }
-                    setStatusForAllElements(ElementStatus.NONE);
+                    Collection<Node> nodesToDelete = getNodesByStatus(ElementStatus.ACTIVE);
+                    Collection<Line> linesToDelete = getLinesByStatus(ElementStatus.ACTIVE);
+                    nodesToDelete.forEach(node -> node.getLines().forEach(line -> deleteLine(line)));
+                    nodes.removeAll(nodesToDelete);
+                    linesToDelete.forEach(line -> deleteLine(line));
                 }
                 repaint();
             }
@@ -138,11 +121,14 @@ public class MainPanel extends JPanel {
                             } else {
                                 Node currentNode = getNodeByPoint(x, y);
                                 if (currentNode != null && currentNode.hasStatus(ElementStatus.NONE)) {
+                                    if (!e.isControlDown()) {
+                                        setStatusForAllElements(ElementStatus.NONE);
+                                    }
                                     makeElementActive(currentNode);
                                 }
                             }
                         } else {
-                            activeNode.setElementStatus(ElementStatus.NONE);
+                            setStatusForAllElements(ElementStatus.NONE);
                         }
                     } else if (mode == Modes.CREATING_LINES) {
                         Node currentNode = getNodeByPoint(x, y);
@@ -153,6 +139,9 @@ public class MainPanel extends JPanel {
                             lines.add(newLine);
                             numberOfCreatedLines++;
                         } else if (currentLine != null && currentLine.hasStatus(ElementStatus.NONE)) {
+                            if (!e.isControlDown()) {
+                                setStatusForAllElements(ElementStatus.NONE);
+                            }
                             makeElementActive(currentLine);
                         }
                     }
@@ -213,7 +202,7 @@ public class MainPanel extends JPanel {
 
 
     private void makeElementActive(Element element) {
-        setStatusForAllElements(ElementStatus.NONE);
+//        setStatusForAllElements(ElementStatus.NONE);
         element.setElementStatus(ElementStatus.ACTIVE);
     }
 
@@ -241,8 +230,16 @@ public class MainPanel extends JPanel {
         lines.forEach(line -> line.setElementStatus(elementStatus));
     }
 
+    private Collection<Line> getLinesByStatus(ElementStatus status) {
+        return lines.stream().filter(line -> line.hasStatus(status)).collect(Collectors.toList());
+    }
+
+    private Collection<Node> getNodesByStatus(ElementStatus status) {
+        return nodes.stream().filter(node -> node.hasStatus(status)).collect(Collectors.toList());
+    }
+
     private Line getLineOrNullByStatus(ElementStatus elementStatus) {
-        return lines.stream().filter(element -> element.hasStatus(elementStatus)).findFirst().orElse(null);
+        return lines.stream().filter(line -> line.hasStatus(elementStatus)).findFirst().orElse(null);
     }
 
     private Node getNodeOrNullByStatus(ElementStatus status) {
@@ -272,7 +269,6 @@ public class MainPanel extends JPanel {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
-//      TODO add optional grid to main panel
         if (gridIsVisible) {
             Color gridColor = Palette.getFontColor();
             int red = gridColor.getRed(), green = gridColor.getGreen(), blue = gridColor.getBlue();
@@ -291,11 +287,20 @@ public class MainPanel extends JPanel {
         drawAllNodes(graphics2D);
     }
 
-    public void clearAll(){
-        nodes.clear();
-        lines.clear();
-        numberOfCreatedLines = 0;
-        numberOfCreatedNodes = 0;
+    public void clear() {
+        Collection<Node> nodesToDelete = getNodesByStatus(ElementStatus.ACTIVE);
+        Collection<Line> linesToDelete = getLinesByStatus(ElementStatus.ACTIVE);
+        if (nodesToDelete.isEmpty() && linesToDelete.isEmpty()) {
+            nodes.clear();
+            lines.clear();
+            numberOfCreatedLines = 0;
+            numberOfCreatedNodes = 0;
+            repaint();
+            return;
+        }
+        nodesToDelete.forEach(node -> node.getLines().forEach(this::deleteLine));
+        nodes.removeAll(nodesToDelete);
+        linesToDelete.forEach(this::deleteLine);
         repaint();
     }
 
@@ -315,12 +320,7 @@ public class MainPanel extends JPanel {
         MainPanel.gridIsVisible = gridIsVisible;
     }
 
-    public static Modes getMode() {
-        return mode;
-    }
-
     public static void setMode(Modes mode) {
         MainPanel.mode = mode;
     }
-
 }
