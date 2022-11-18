@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
 public class Button extends JButton {
-    private Color currentBackgroundColor = Palette.getMainPanelBackground();
+    private Color currentBackgroundColor = Palette.getButtonBackground();
 
 
     private static Color effectColor = Color.WHITE;
@@ -14,14 +14,13 @@ public class Button extends JButton {
     private int x, y;
 
     public void changeTheme() {
-        this.currentBackgroundColor = Palette.getMainPanelBackground();
+        this.currentBackgroundColor = Palette.getButtonBackground();
         repaint();
     }
 
     public Button(String text) {
         super(text);
         this.setPreferredSize(new Dimension(250,60));
-//        this.setMaximumSize(new Dimension(250,60));
         this.setFont(new Font("Arial", Font.BOLD, 24));
         this.setFocusable(false);
         this.setContentAreaFilled(false);
@@ -95,6 +94,9 @@ public class Button extends JButton {
         graphics2D.fillRect(0, 0, getWidth(), getHeight());
         graphics2D.setColor(currentBackgroundColor);
         graphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+//        graphics2D.setColor(Palette.getButtonBorderColor());
+//        graphics2D.setStroke(new BasicStroke(2));
+//        graphics2D.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 10, 10);
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
         graphics2D.setColor(Palette.getFontColor());
         FontMetrics fm = getFontMetrics(getFont());

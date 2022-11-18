@@ -1,10 +1,10 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class Window extends JFrame {
-    static boolean darkModeEnabled = false;
-    static boolean fullScreenDisabled = false;
+    static boolean darkModeEnabled = true;
+    static boolean fullScreenEnabled = false;
     static Button clearButton = new Button("Clear");
     static CustomComboBox modeChooser = new CustomComboBox(new Modes[]{Modes.CREATING_NODES, Modes.CREATING_LINES, Modes.FINDING_PATH, Modes.FINDING_SHORTEST_PATH_TREE});
     static CustomComboBox metricChooser = new CustomComboBox(new Modes[]{Modes.CREATING_NODES, Modes.CREATING_LINES, Modes.FINDING_PATH});
@@ -13,7 +13,7 @@ public class Window extends JFrame {
 
     public Window() {
         this.setTitle("Modified Dijkstra`s algorithm by Tkachuk Oleksandr");
-        this.setUndecorated(true);
+        this.setUndecorated(fullScreenEnabled);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -31,100 +31,110 @@ public class Window extends JFrame {
         gridBagConstraints.gridx = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.weightx = 0.05;
+        this.add(menuPanel, gridBagConstraints);
+
+        clearButton.addActionListener((event) -> mainPanel.clearAll());
+
+
         menuPanel.setLayout(new GridBagLayout());
 
         SubMenuPanel metricPanel = new SubMenuPanel(new GridBagLayout());
         SubMenuPanel modePanel = new SubMenuPanel(new GridBagLayout());
         SubMenuPanel switchPanel = new SubMenuPanel();
 
-        menuPanel.add(metricPanel, getGbc(0, 0, 2, 1, 1,0.3));
-        menuPanel.add(modePanel, getGbc(0, 2, 3, 1, 1,0.35));
-        menuPanel.add(switchPanel, getGbc(0, 5, 2, 1, 1,0.35));
+        menuPanel.add(metricPanel, getGbc(0, 0, 2, 1, 1, 0.35));
+        menuPanel.add(modePanel, getGbc(0, 2, 3, 1, 1, 0.25));
+        menuPanel.add(switchPanel, getGbc(0, 5, 2, 1, 1, 0.4));
+
 
         switchPanel.setLayout(new GridBagLayout());
 
         SubMenuPanel clearPanel = new SubMenuPanel(new GridBagLayout());
-        SubMenuPanel gridPanel = new SubMenuPanel(new GridLayout(2,1));
-        SubMenuPanel themePanel = new SubMenuPanel(new GridLayout(2,1));
+        SubMenuPanel gridSwitchPanel = new SubMenuPanel(new GridLayout(2, 1));
+        SubMenuPanel mapSwitchPanel = new SubMenuPanel(new GridLayout(2, 1));
+        SubMenuPanel themeSwitchPanel = new SubMenuPanel(new GridLayout(2, 1));
 
         clearPanel.add(clearButton);
-        gridPanel.add(new MenuPanelLabel("Grid",JLabel.BOTTOM,JLabel.CENTER));
-        gridPanel.add(new SwitchButton());
-//
-        themePanel.add(new MenuPanelLabel("Theme",JLabel.BOTTOM,JLabel.CENTER));
-        themePanel.add(new SwitchButton());
 
-        switchPanel.add(clearPanel,getGbc(0,0,1,4,1,0.33));
-        switchPanel.add(gridPanel,getGbc(0,1,2,2,0.5,0.66));
-        switchPanel.add(themePanel,getGbc(2,1,2,2,0.5,0.66));
+        gridSwitchPanel.add(new MenuPanelLabel("Grid", JLabel.BOTTOM, JLabel.CENTER));
+        gridSwitchPanel.add(new SwitchButton(Palette.BUTTON_DARK_BACKGROUND, Palette.BUTTON_LIGHT_BACKGROUND, 255, MainPanel.isGridVisible()) {
+            @Override
+            public boolean checkCondition() {
+                return MainPanel.isGridVisible();
+            }
+
+            @Override
+            public void buttonPressed() {
+                MainPanel.setGridVisible(!MainPanel.isGridVisible());
+                mainPanel.repaint();
+            }
+        });
+
+        mapSwitchPanel.add(new MenuPanelLabel("Map", JLabel.BOTTOM, JLabel.CENTER));
+        mapSwitchPanel.add(new SwitchButton(Palette.BUTTON_DARK_BACKGROUND, Palette.BUTTON_LIGHT_BACKGROUND, 255, MainPanel.isMapVisible()) {
+            @Override
+            public boolean checkCondition() {
+                return MainPanel.isMapVisible();
+            }
+
+            @Override
+            public void buttonPressed() {
+                MainPanel.setMapVisible(!MainPanel.isMapVisible());
+                mainPanel.repaint();
+            }
+        });
+
+        themeSwitchPanel.add(new MenuPanelLabel("Theme", JLabel.BOTTOM, JLabel.CENTER));
+        themeSwitchPanel.add(new SwitchButton(Palette.DARK_SWITCH_THEME_BUTTON_BACKGROUND, Palette.LIGHT_SWITCH_THEME_BUTTON_BACKGROUND, 30, darkModeEnabled) {
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+                Graphics2D graphics2D = (Graphics2D) g;
+                graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
+                graphics2D.drawImage(ImagesAndIcons.getMoonIcon(), (int) (getRectangleX() + getCurrentPosition()), getRectangleY() + (SwitchButton.HEIGHT - SwitchButton.SIZE_OF_CYCLE) / 2, null);
+                graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - getAlpha()));
+                graphics2D.drawImage(ImagesAndIcons.getSunIcon(), (int) (getRectangleX() + getCurrentPosition()), getRectangleY() + (SwitchButton.HEIGHT - SwitchButton.SIZE_OF_CYCLE) / 2, null);
+            }
+
+            @Override
+            public boolean checkCondition() {
+                return darkModeEnabled;
+            }
+
+            @Override
+            public void buttonPressed() {
+                Window.darkModeEnabled = !Window.darkModeEnabled;
+                Window.menuPanel.changeTheme();
+                Window.mainPanel.paintImmediately(0, 0, Window.mainPanel.getWidth(), Window.mainPanel.getHeight());
+            }
+        });
+
+        switchPanel.add(clearPanel, getGbc(0, 0, 1, 4, 1, 0.2));
+        switchPanel.add(gridSwitchPanel, getGbc(0, 1, 2, 2, 0.5, 0.4));
+        switchPanel.add(mapSwitchPanel, getGbc(2, 1, 2, 2, 0.5, 0.4));
+        switchPanel.add(themeSwitchPanel, getGbc(0, 3, 1, 4, 0.5, 0.4));
 
 
-        SubMenuPanel metricLabelPanel = new SubMenuPanel(new GridBagLayout());
-        SubMenuPanel metricChooserPanel = new SubMenuPanel(new GridBagLayout());
-        metricPanel.add(metricLabelPanel,getGbc(0,0,1,1,1,0.2));
-        metricPanel.add(metricChooserPanel,getGbc(0,1,2,1,1,0.8));
+        SubMenuPanel metricLabelPanel = new SubMenuPanel(new GridLayout());
+        SubMenuPanel metricChooserPanel = new SubMenuPanel();
+
+        metricPanel.add(new SubMenuPanel(), getGbc(0, 0, 1, 1, 1, 0.3));
+        metricPanel.add(metricLabelPanel, getGbc(0, 1, 1, 1, 1, 0.2));
+        metricPanel.add(metricChooserPanel, getGbc(0, 2, 2, 1, 1, 0.6));
 
 
-        SubMenuPanel modeLabelPanel = new SubMenuPanel(new GridBagLayout());
-        SubMenuPanel modeChooserPanel = new SubMenuPanel(new GridBagLayout());
-        modePanel.add(modeLabelPanel,getGbc(0,0,1,1,1,0.2));
-        modePanel.add(modeChooserPanel,getGbc(0,1,2,1,1,0.8));
+        SubMenuPanel modeLabelPanel = new SubMenuPanel(new GridLayout());
+        SubMenuPanel modeChooserPanel = new SubMenuPanel();
+        modePanel.add(modeLabelPanel, getGbc(0, 0, 1, 1, 1, 0.2));
+        modePanel.add(modeChooserPanel, getGbc(0, 1, 2, 1, 1, 0.8));
 
 
-        metricLabelPanel.add(new MenuPanelLabel("Metric mode",JLabel.CENTER,JLabel.CENTER));
+        metricLabelPanel.add(new MenuPanelLabel("Metric mode", JLabel.CENTER, JLabel.CENTER));
         metricChooserPanel.add(metricChooser);
 
-        modeLabelPanel.add(new MenuPanelLabel("Mode",JLabel.CENTER,JLabel.CENTER));
+        modeLabelPanel.add(new MenuPanelLabel("Mode", JLabel.CENTER, JLabel.CENTER));
         modeChooserPanel.add(modeChooser);
 
-
-
-
-
-//        SubMenuPanel jPanel = new SubMenuPanel();
-//        jPanel.setLayout(new GridBagLayout());
-//        jPanel.add();
-//        clearPanel.add(clearButton);
-//        clearButtonPanel.add(clearButton);
-//        gridSwitchPanel.add(new MenuPanelLabel("Grid", JLabel.CENTER));
-//        gridSwitchPanel.add(new SwitchButton());
-        this.add(menuPanel, gridBagConstraints);
-
-
-//        clearButtonPanel.add(clearButton);
-//        gridSwitchPanel.add(clearButton);
-//        themeSwitchPanel.add(clearButton);
-
-
-
-
-//        SubMenuPanel darkModeSwitchPanel = new SubMenuPanel(new GridLayout(3,1));
-//        SubMenuPanel clearButtonPanel = new SubMenuPanel(new GridBagLayout());
-//        SubMenuPanel modeChooserPanel = new SubMenuPanel(new GridBagLayout());
-//        SubMenuPanel modeChooserLabelPanel = new SubMenuPanel(new GridLayout(3, 1));
-
-
-//        menuPanel.add(Box.createGlue());
-//        menuPanel.add(modeChooserLabelPanel);
-//        menuPanel.add(modeChooserPanel);
-////        menuPanel.add(clearButtonPanel);
-//        menuPanel.add(darkModeSwitchPanel);
-//        modeChooserLabelPanel.add(new MenuPanelLabel("Current working mode", JLabel.CENTER));
-////        modeChooserPanel.add(modeChooser);
-////        modeChooserPanel.add(clearButton);
-////        clearButtonPanel.add(Box.createGlue());
-////        clearButtonPanel.add(Box.createGlue());
-////        clearButtonPanel.add(clearButton);
-////        clearButtonPanel.add();
-//        modeChooserLabelPanel.add(new MenuPanelLabel("Current working mode", JLabel.CENTER));
-////        darkModeSwitchPanel.add(Box.createGlue());
-//        darkModeSwitchPanel.add(Box.createGlue());
-//        darkModeSwitchPanel.add(clearButton);
-//        darkModeSwitchPanel.add(new MenuPanelLabel("Grid", JLabel.CENTER));
-//        darkModeSwitchPanel.add(new SwitchButton());
-//        darkModeSwitchPanel.add(new MenuPanelLabel("Theme", JLabel.CENTER));
-//        darkModeSwitchPanel.add(new SwitchButton());
-//        clearButtonPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         this.setVisible(true);
     }

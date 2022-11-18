@@ -2,12 +2,15 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainPanel extends JPanel {
+    private static boolean mapIsVisible = false;
+    private static boolean gridIsVisible = true;
     private boolean imagesAreReady = false;
     private static Image darkThemeMap;
     private static Image lightThemeMap;
@@ -15,20 +18,16 @@ public class MainPanel extends JPanel {
     private static int numberOfCreatedLines = 0;
     private static final ArrayList<Node> nodes = new ArrayList<>();
     private static final ArrayList<Line> lines = new ArrayList<>();
-    public static Modes mode = Modes.CREATING_NODES;
+    private static Modes mode = Modes.CREATING_NODES;
     private static final HashMap<Integer, Modes> modesMap = new HashMap<>();
+    public static final int GRID_SIZE = 40;
+
 
     static {
         modesMap.put(KeyEvent.VK_1, Modes.CREATING_NODES);
         modesMap.put(KeyEvent.VK_2, Modes.CREATING_LINES);
         modesMap.put(KeyEvent.VK_3, Modes.FINDING_PATH);
         modesMap.put(KeyEvent.VK_4, Modes.FINDING_SHORTEST_PATH_TREE);
-        try {
-            darkThemeMap = ImageIO.read(new File("images/darkThemeMap.png"));
-            lightThemeMap = ImageIO.read(new File("images/lightThemeMap.png"));
-        } catch (IOException e) {
-            System.err.println("Can`t open image of map!");
-        }
     }
 
     public MainPanel() {
@@ -40,8 +39,8 @@ public class MainPanel extends JPanel {
                     setStatusForAllElements(ElementStatus.NONE);
                 } else if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
                     SwingUtilities.getWindowAncestor(Window.mainPanel).dispose();
-                    ((JFrame) SwingUtilities.getWindowAncestor(Window.mainPanel)).setUndecorated(Window.fullScreenDisabled);
-                    Window.fullScreenDisabled = !Window.fullScreenDisabled;
+                    Window.fullScreenEnabled = !Window.fullScreenEnabled;
+                    ((JFrame) SwingUtilities.getWindowAncestor(Window.mainPanel)).setUndecorated(Window.fullScreenEnabled);
                     SwingUtilities.getWindowAncestor(Window.mainPanel).setVisible(true);
                 } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     Window.darkModeEnabled = !Window.darkModeEnabled;
@@ -220,8 +219,8 @@ public class MainPanel extends JPanel {
 
     private Image getMap() {
         if (!imagesAreReady) {
-            darkThemeMap = darkThemeMap.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_AREA_AVERAGING);
-            lightThemeMap = lightThemeMap.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_AREA_AVERAGING);
+            darkThemeMap = ImagesAndIcons.getDarkThemeMap().getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH);
+            lightThemeMap = ImagesAndIcons.getLightThemeMap().getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH);
             imagesAreReady = true;
         }
         return Window.darkModeEnabled ? darkThemeMap : lightThemeMap;
@@ -274,8 +273,54 @@ public class MainPanel extends JPanel {
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
 //      TODO add optional grid to main panel
-        graphics2D.drawImage(getMap(), 0, 0, null);
+        if (gridIsVisible) {
+            Color gridColor = Palette.getFontColor();
+            int red = gridColor.getRed(), green = gridColor.getGreen(), blue = gridColor.getBlue();
+            graphics2D.setColor(new Color(red, green, blue, mapIsVisible ? 30 : 60));
+            for (int x = GRID_SIZE; x < getWidth(); x += GRID_SIZE) {
+                graphics2D.drawLine(x, 0, x, getHeight());
+            }
+            for (int y = GRID_SIZE; y < getHeight(); y += GRID_SIZE) {
+                graphics2D.drawLine(0, y, getWidth(), y);
+            }
+        }
+        if (mapIsVisible) {
+            graphics2D.drawImage(getMap(), 0, 0, null);
+        }
         drawAllLines(graphics2D);
         drawAllNodes(graphics2D);
     }
+
+    public void clearAll(){
+        nodes.clear();
+        lines.clear();
+        numberOfCreatedLines = 0;
+        numberOfCreatedNodes = 0;
+        repaint();
+    }
+
+    public static boolean isMapVisible() {
+        return mapIsVisible;
+    }
+
+    public static void setMapVisible(boolean mapIsVisible) {
+        MainPanel.mapIsVisible = mapIsVisible;
+    }
+
+    public static boolean isGridVisible() {
+        return gridIsVisible;
+    }
+
+    public static void setGridVisible(boolean gridIsVisible) {
+        MainPanel.gridIsVisible = gridIsVisible;
+    }
+
+    public static Modes getMode() {
+        return mode;
+    }
+
+    public static void setMode(Modes mode) {
+        MainPanel.mode = mode;
+    }
+
 }

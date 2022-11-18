@@ -6,7 +6,6 @@ import java.util.Random;
 public class SubMenuPanel extends JPanel {
     public SubMenuPanel() {
 //        super(new GridLayout(2,1));
-        this.setBorder(null);
     }
 
     public SubMenuPanel(LayoutManager layoutManager) {

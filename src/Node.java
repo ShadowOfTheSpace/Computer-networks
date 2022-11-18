@@ -1,9 +1,6 @@
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -20,16 +17,19 @@ public class Node extends Element {
 
     public Node(int id, int x, int y) {
         super(id, NodeNameGenerator.generateName(id), ElementStatus.NONE);
-
-        this.x = Math.round(x / 10.f) * 10;
-        this.y = Math.round(y / 10.f) * 10;
+        setCoordinates(x, y);
         this.trustFactor = true;
         this.ipAddress = RandomIPAddressGenerator.getIP();
     }
 
     public void setCoordinates(int x, int y) {
-        this.x = Math.round(x / 10.f) * 10;
-        this.y = Math.round(y / 10.f) * 10;
+        if (MainPanel.isGridVisible()) {
+            this.x = Math.round(x / (float) MainPanel.GRID_SIZE) * MainPanel.GRID_SIZE;
+            this.y = Math.round(y / (float) MainPanel.GRID_SIZE) * MainPanel.GRID_SIZE;
+        } else {
+            this.x = x;
+            this.y = y;
+        }
     }
 
     public int getX() {
@@ -93,9 +93,9 @@ public class Node extends Element {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        graphics2D.drawImage(NodeImages.getImage(Window.darkModeEnabled, this.trustFactor, this.elementStatus), (int) getEllipse().getX(), (int) getEllipse().getY(), null);
+        graphics2D.drawImage(ImagesAndIcons.getImage(Window.darkModeEnabled, this.trustFactor, this.elementStatus), (int) getEllipse().getX(), (int) getEllipse().getY(), null);
         graphics2D.setStroke(new BasicStroke(3));
-        graphics2D.setColor(Window.darkModeEnabled ? Color.decode("#0F0F0F").brighter() : Color.decode("#D9E1F2"));
+        graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
         graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() + 3, (int) this.getEllipse().getY() - 3);
         graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() + 3, (int) this.getEllipse().getY() + 3);

@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class CustomComboBox extends JPanel {
     private final int COMBO_BOX_BUTTON_WIDTH = 250;
     private final int COMBO_BOX_BUTTON_HEIGHT = 60;
-    private final int POPUP_BUTTON_WIDTH = 250;
+    private final int POPUP_BUTTON_WIDTH = 240;
     private final int POPUP_BUTTON_HEIGHT = 40;
     private Button[] popUpButtons;
     private Button comboBoxButton;
@@ -47,7 +47,8 @@ public class CustomComboBox extends JPanel {
         this.add(comboBoxButton);
         for (int i = 0; i < items.length; i++) {
             popUpButtons[i] = new Button(items[i].toString());
-            popUpButtons[i].setBounds(0, COMBO_BOX_BUTTON_HEIGHT + i * POPUP_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, POPUP_BUTTON_HEIGHT);
+//            popUpButtons[i].setBounds((COMBO_BOX_BUTTON_WIDTH - POPUP_BUTTON_WIDTH) / 2, COMBO_BOX_BUTTON_HEIGHT + i * POPUP_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, POPUP_BUTTON_HEIGHT);
+            popUpButtons[i].setBounds(COMBO_BOX_BUTTON_WIDTH - POPUP_BUTTON_WIDTH, COMBO_BOX_BUTTON_HEIGHT + i * POPUP_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, POPUP_BUTTON_HEIGHT);
             popUpButtons[i].setVisible(false);
             int finalI = i;
             popUpButtons[i].addActionListener(new AbstractAction() {
@@ -56,7 +57,7 @@ public class CustomComboBox extends JPanel {
                     comboBoxButton.setText(popUpButtons[finalI].getText());
                     popUpIsShowing = false;
                     showPopUp(false);
-                    MainPanel.mode = (Modes)items[finalI];
+                    MainPanel.setMode((Modes) items[finalI]);
                 }
             });
             this.add(popUpButtons[i]);
@@ -70,9 +71,9 @@ public class CustomComboBox extends JPanel {
         this.getRootPane().repaint();
     }
 
-    public void changeTheme(){
+    public void changeTheme() {
         comboBoxButton.changeTheme();
-        for (Button button:popUpButtons){
+        for (Button button : popUpButtons) {
             button.changeTheme();
         }
     }
