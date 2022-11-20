@@ -1,11 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MenuPanel extends JPanel {
     public MenuPanel() {
         this.setOpaque(true);
         changeTheme();
         this.setBorder(new RoundedCornerBorder());
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Window.mainPanel.requestFocus();
+            }
+        });
     }
 
     public static Color getBackgroundColor() {

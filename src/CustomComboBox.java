@@ -1,21 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.Arrays;
 
-public class CustomComboBox extends JPanel {
-    private final int COMBO_BOX_BUTTON_WIDTH = 250;
-    private final int COMBO_BOX_BUTTON_HEIGHT = 60;
-    private final int POPUP_BUTTON_WIDTH = 240;
-    private final int POPUP_BUTTON_HEIGHT = 40;
-    private Button[] popUpButtons;
-    private Button comboBoxButton;
+public abstract class CustomComboBox extends JPanel {
+    private static final int COMBO_BOX_BUTTON_WIDTH = 250;
+    private static final int COMBO_BOX_BUTTON_HEIGHT = 60;
+    private static final int POPUP_BUTTON_WIDTH = 240;
+    private static final int POPUP_BUTTON_HEIGHT = 40;
+    private final Button[] popUpButtons;
+    private final Button comboBoxButton;
+    private final JPanel popUpPanel;
     private boolean popUpIsShowing = false;
+    private Object selectedItem = 0;
 
-
-    public CustomComboBox(Object[] items) {
+    public CustomComboBox(Object... items) {
         this.setLayout(null);
         this.setOpaque(true);
+        this.setFocusable(false);
         popUpButtons = new Button[items.length];
         comboBoxButton = new Button(items[0].toString()) {
             @Override
@@ -37,37 +41,64 @@ public class CustomComboBox extends JPanel {
         comboBoxButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                popUpIsShowing = !popUpIsShowing;
-                showPopUp(popUpIsShowing);
+                if (popUpIsShowing) {
+                    hidePopUp();
+                } else {
+                    showPopUp();
+                }
             }
         });
-
-
         this.setPreferredSize(new Dimension(COMBO_BOX_BUTTON_WIDTH, COMBO_BOX_BUTTON_HEIGHT + (items.length) * POPUP_BUTTON_HEIGHT));
         this.add(comboBoxButton);
+        popUpPanel = new JPanel(null);
+        popUpPanel.setBackground(Color.GREEN);
+        popUpPanel.setBounds(COMBO_BOX_BUTTON_WIDTH - POPUP_BUTTON_WIDTH, COMBO_BOX_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, items.length * POPUP_BUTTON_HEIGHT);
+        popUpPanel.setVisible(false);
+        popUpPanel.setFocusable(true);
+        this.add(popUpPanel);
         for (int i = 0; i < items.length; i++) {
             popUpButtons[i] = new Button(items[i].toString());
-//            popUpButtons[i].setBounds((COMBO_BOX_BUTTON_WIDTH - POPUP_BUTTON_WIDTH) / 2, COMBO_BOX_BUTTON_HEIGHT + i * POPUP_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, POPUP_BUTTON_HEIGHT);
-            popUpButtons[i].setBounds(COMBO_BOX_BUTTON_WIDTH - POPUP_BUTTON_WIDTH, COMBO_BOX_BUTTON_HEIGHT + i * POPUP_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, POPUP_BUTTON_HEIGHT);
-            popUpButtons[i].setVisible(false);
+            popUpButtons[i].setBounds(0, i * POPUP_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, POPUP_BUTTON_HEIGHT);
             int finalI = i;
             popUpButtons[i].addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    selectedItem = items[finalI];
                     comboBoxButton.setText(popUpButtons[finalI].getText());
-                    popUpIsShowing = false;
-                    showPopUp(false);
-                    MainPanel.setMode((Modes) items[finalI]);
+                    hidePopUp();
+                    itemChanged();
                 }
             });
-            this.add(popUpButtons[i]);
+            popUpPanel.add(popUpButtons[i]);
+            popUpPanel.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    showPopUp();
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    hidePopUp();
+                }
+            });
         }
     }
 
-    public void showPopUp(boolean popUpIsShowing) {
-        for (Button button : popUpButtons) {
-            button.setVisible(popUpIsShowing);
-        }
+    public Object getSelectedItem(){
+        return selectedItem;
+    }
+    public abstract void itemChanged();
+
+    public void hidePopUp() {
+        this.popUpPanel.setVisible(false);
+        this.popUpIsShowing = false;
+        this.getRootPane().repaint();
+    }
+
+    public void showPopUp() {
+        this.popUpPanel.setVisible(true);
+        this.popUpPanel.requestFocus();
+        this.popUpIsShowing = true;
         this.getRootPane().repaint();
     }
 

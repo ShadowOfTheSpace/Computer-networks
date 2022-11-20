@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class MainPanel extends JPanel {
     private static boolean mapIsVisible = false;
-    private static boolean gridIsVisible = true;
+    private static boolean gridIsVisible = false;
     private boolean imagesAreReady = false;
     private static Image darkThemeMap;
     private static Image lightThemeMap;
@@ -16,23 +16,16 @@ public class MainPanel extends JPanel {
     private static int numberOfCreatedLines = 0;
     private static final ArrayList<Node> nodes = new ArrayList<>();
     private static final ArrayList<Line> lines = new ArrayList<>();
-    private static Modes mode = Modes.CREATING_NODES;
-    private static final HashMap<Integer, Modes> modesMap = new HashMap<>();
+    private static Mode mode = Mode.CREATING_NODES;
+    private static Metric metric = Metric.HOPS;
     public static final int GRID_SIZE = 40;
 
-
-    static {
-        modesMap.put(KeyEvent.VK_1, Modes.CREATING_NODES);
-        modesMap.put(KeyEvent.VK_2, Modes.CREATING_LINES);
-        modesMap.put(KeyEvent.VK_3, Modes.FINDING_PATH);
-        modesMap.put(KeyEvent.VK_4, Modes.FINDING_SHORTEST_PATH_TREE);
-    }
 
     public MainPanel() {
         this.setFocusable(true);
         this.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e) {
+            public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     setStatusForAllElements(ElementStatus.NONE);
                 } else if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -41,11 +34,9 @@ public class MainPanel extends JPanel {
                     ((JFrame) SwingUtilities.getWindowAncestor(Window.mainPanel)).setUndecorated(Window.fullScreenEnabled);
                     SwingUtilities.getWindowAncestor(Window.mainPanel).setVisible(true);
                 } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                    Collection<Node> nodesToDelete = getNodesByStatus(ElementStatus.ACTIVE);
-                    Collection<Line> linesToDelete = getLinesByStatus(ElementStatus.ACTIVE);
-                    nodesToDelete.forEach(node -> node.getLines().forEach(line -> deleteLine(line)));
-                    nodes.removeAll(nodesToDelete);
-                    linesToDelete.forEach(line -> deleteLine(line));
+                    deleteElements();
+                } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A) {
+                    setStatusForAllElements(ElementStatus.ACTIVE);
                 }
                 repaint();
             }
@@ -54,29 +45,30 @@ public class MainPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (mode == Modes.CREATING_NODES) {
-                        Node currentNode = getNodeByPoint(x, y);
+                if (SwingUtilities.isLeftMouseButton(e) && !e.isControlDown()) {
+                    if (mode == Mode.CREATING_NODES) {
+                        Node currentNode = getNodeOrNullByPoint(x, y);
                         if (currentNode == null) {
-                            currentNode = getNodeOrNullByStatus(ElementStatus.NODE_IS_MOVABLE);
+                            currentNode = getNodeOrNullByStatus(ElementStatus.MOVING_NODE);
                         }
                         if (currentNode != null && !currentNode.hasStatus(ElementStatus.NONE)) {
-                            currentNode.setElementStatus(ElementStatus.NODE_IS_MOVABLE);
+                            currentNode.setElementStatus(ElementStatus.MOVING_NODE);
                             int oldX = currentNode.getX(), oldY = currentNode.getY();
                             currentNode.setCoordinates(x, y);
                             if (hasIntersection(currentNode)) {
                                 currentNode.setCoordinates(oldX, oldY);
                             }
+                            setCursor(new Cursor(Cursor.MOVE_CURSOR));
                         }
-                    } else if (mode == Modes.CREATING_LINES) {
-                        Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
+                    } else if (mode == Mode.CREATING_LINES) {
+                        Line currentLine = getLineOrNullByStatus(ElementStatus.DRAWING_LINE);
                         if (currentLine != null) {
                             currentLine.setCursorCoordinates(x, y);
-                            Node currentNode = getNodeByPoint(x, y);
-                            if (currentNode != null && !currentNode.hasStatus(ElementStatus.NODE_IS_START_NODE)) {
-                                currentNode.setElementStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                            Node currentNode = getNodeOrNullByPoint(x, y);
+                            if (currentNode != null && !currentNode.hasStatus(ElementStatus.START_NODE)) {
+                                currentNode.setElementStatus(ElementStatus.END_NODE);
                             } else {
-                                currentNode = getNodeOrNullByStatus(ElementStatus.NODE_CAN_BE_END_NODE);
+                                currentNode = getNodeOrNullByStatus(ElementStatus.END_NODE);
                                 if (currentNode != null) {
                                     currentNode.setElementStatus(ElementStatus.NONE);
                                 }
@@ -90,14 +82,20 @@ public class MainPanel extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
-                if (mode == Modes.CREATING_NODES) {
-                    if (getNodeByPoint(x, y) != null) {
+                if (mode == Mode.CREATING_NODES) {
+                    if (getNodeOrNullByPoint(x, y) != null || (getLineOrNullByPoint(x, y) != null && e.isControlDown())) {
                         setCursor(new Cursor(Cursor.HAND_CURSOR));
                     } else {
                         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     }
-                } else if (mode == Modes.CREATING_LINES) {
-                    if (getNodeByPoint(x, y) != null || getLineByPoint(x, y) != null) {
+                } else if (mode == Mode.CREATING_LINES) {
+                    if (getNodeOrNullByPoint(x, y) != null || getLineOrNullByPoint(x, y) != null) {
+                        setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    } else {
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
+                } else if (mode == Mode.FINDING_PATH || mode == Mode.FINDING_TREE) {
+                    if (getNodeOrNullByPoint(x, y) != null) {
                         setCursor(new Cursor(Cursor.HAND_CURSOR));
                     } else {
                         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -109,17 +107,23 @@ public class MainPanel extends JPanel {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                requestFocus();
                 int x = e.getX(), y = e.getY();
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (mode == Modes.CREATING_NODES) {
+                    if ((mode == Mode.CREATING_NODES || mode == Mode.CREATING_LINES) && e.isControlDown()) {
+                        Element currentElement = getElementOrNullByPoint(x, y);
+                        if (currentElement != null) {
+                            currentElement.changeActiveStatus();
+                        }
+                    } else if (mode == Mode.CREATING_NODES) {
                         Node activeNode = getNodeOrNullByStatus(ElementStatus.ACTIVE);
-                        if (activeNode == null || getNodeByPoint(x, y) != null) {
+                        if ((activeNode == null || getNodeOrNullByPoint(x, y) != null)) {
                             Node newNode = new Node(numberOfCreatedNodes + 1, x, y);
                             if (!hasIntersection(newNode)) {
                                 nodes.add(newNode);
                                 numberOfCreatedNodes++;
                             } else {
-                                Node currentNode = getNodeByPoint(x, y);
+                                Node currentNode = getNodeOrNullByPoint(x, y);
                                 if (currentNode != null && currentNode.hasStatus(ElementStatus.NONE)) {
                                     if (!e.isControlDown()) {
                                         setStatusForAllElements(ElementStatus.NONE);
@@ -130,11 +134,11 @@ public class MainPanel extends JPanel {
                         } else {
                             setStatusForAllElements(ElementStatus.NONE);
                         }
-                    } else if (mode == Modes.CREATING_LINES) {
-                        Node currentNode = getNodeByPoint(x, y);
-                        Line currentLine = getLineByPoint(x, y);
+                    } else if (mode == Mode.CREATING_LINES) {
+                        Node currentNode = getNodeOrNullByPoint(x, y);
+                        Line currentLine = getLineOrNullByPoint(x, y);
                         if (currentNode != null) {
-                            currentNode.setElementStatus(ElementStatus.NODE_IS_START_NODE);
+                            currentNode.setElementStatus(ElementStatus.START_NODE);
                             Line newLine = new Line(numberOfCreatedLines, currentNode);
                             lines.add(newLine);
                             numberOfCreatedLines++;
@@ -143,6 +147,38 @@ public class MainPanel extends JPanel {
                                 setStatusForAllElements(ElementStatus.NONE);
                             }
                             makeElementActive(currentLine);
+                        }
+                    } else if (mode == Mode.FINDING_PATH) {
+                        Node currentNode = getNodeOrNullByPoint(x, y);
+                        if (currentNode != null) {
+                            Node startNode = getNodeOrNullByStatus(ElementStatus.START_NODE);
+                            Node endNode = getNodeOrNullByStatus(ElementStatus.END_NODE);
+                            if (startNode == null && endNode == null) {
+                                currentNode.setElementStatus(ElementStatus.START_NODE);
+                            } else if (startNode != null && endNode == null) {
+                                currentNode.setElementStatus(ElementStatus.END_NODE);
+                            } else if (startNode == null) {
+                                currentNode.setElementStatus(ElementStatus.START_NODE);
+                            } else if (currentNode.hasStatus(ElementStatus.START_NODE) || currentNode.hasStatus(ElementStatus.END_NODE)) {
+                                currentNode.setElementStatus(ElementStatus.NONE);
+                            }
+                            drawPath();
+                        }
+                    } else if (mode == Mode.FINDING_TREE) {
+                        Node currentNode = getNodeOrNullByPoint(x, y);
+                        if (currentNode != null) {
+                            Node startNode = getNodeOrNullByStatus(ElementStatus.START_NODE);
+                            if (startNode == null) {
+                                currentNode.setElementStatus(ElementStatus.START_NODE);
+                            } else {
+                                if (currentNode.equals(startNode)) {
+                                    currentNode.setElementStatus(ElementStatus.NONE);
+                                } else {
+                                    startNode.setElementStatus(ElementStatus.NONE);
+                                    currentNode.setElementStatus(ElementStatus.START_NODE);
+                                }
+                            }
+                            drawTree();
                         }
                     }
                     repaint();
@@ -153,16 +189,17 @@ public class MainPanel extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (mode == Modes.CREATING_NODES) {
-                        Node currentNode = getNodeByPoint(x, y);
-                        if (currentNode != null && currentNode.hasStatus(ElementStatus.NODE_IS_MOVABLE)) {
+                    if (mode == Mode.CREATING_NODES) {
+                        Node currentNode = getNodeOrNullByPoint(x, y);
+                        if (currentNode != null && currentNode.hasStatus(ElementStatus.MOVING_NODE)) {
                             currentNode.setElementStatus(ElementStatus.ACTIVE);
+                            setCursor(new Cursor(Cursor.HAND_CURSOR));
                         }
                     }
-                    if (mode == Modes.CREATING_LINES) {
-                        Node currentNode = getNodeByPoint(x, y);
+                    if (mode == Mode.CREATING_LINES) {
+                        Node currentNode = getNodeOrNullByPoint(x, y);
                         if (currentNode != null) {
-                            Line currentLine = getLineOrNullByStatus(ElementStatus.LINE_STILL_DRAWING);
+                            Line currentLine = getLineOrNullByStatus(ElementStatus.DRAWING_LINE);
                             if (currentLine != null) {
                                 if (!currentLine.getStartNode().equals(currentNode)) {
                                     currentLine.setEndNodeAndLength(currentNode, 1);
@@ -172,27 +209,45 @@ public class MainPanel extends JPanel {
                                     }
                                 } else {
                                     lines.remove(currentLine);
+                                    currentNode.setElementStatus(ElementStatus.NONE);
                                 }
                             }
                         } else {
-                            lines.removeIf(line -> line.hasStatus(ElementStatus.LINE_STILL_DRAWING));
+                            lines.removeIf(line -> line.hasStatus(ElementStatus.DRAWING_LINE));
+                            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                         }
-                        if (getLineByPoint(x, y) == null || getNodeByPoint(x, y) != null) {
+                        if ((getLineOrNullByPoint(x, y) == null || getNodeOrNullByPoint(x, y) != null) && !e.isControlDown()) {
                             setStatusForAllElements(ElementStatus.NONE);
                         }
                     }
                 } else if (SwingUtilities.isMiddleMouseButton(e)) {
-                    Node currentNode = getNodeByPoint(x, y);
+                    Node currentNode = getNodeOrNullByPoint(x, y);
                     if (currentNode != null) {
                         currentNode.changeTrustFactor();
-                    } else if (getLineByPoint(x, y) != null) {
-                        Line currentLine = getLineByPoint(x, y);
+                        if (mode == Mode.FINDING_PATH) {
+                            drawPath();
+                        } else if (mode == Mode.FINDING_TREE) {
+                            drawTree();
+                        }
+                    } else if (getLineOrNullByPoint(x, y) != null) {
+                        Line currentLine = getLineOrNullByPoint(x, y);
                         currentLine.changeColor();
                     }
                 }
                 repaint();
             }
         });
+    }
+
+    private void drawPath() {
+        Node startNode = getNodeOrNullByStatus(ElementStatus.START_NODE);
+        Node endNode = getNodeOrNullByStatus(ElementStatus.END_NODE);
+        Path.showPath(nodes, lines, startNode, endNode);
+    }
+
+    private void drawTree() {
+        Node startNode = getNodeOrNullByStatus(ElementStatus.START_NODE);
+        Tree.showTree(nodes, lines, startNode);
     }
 
     private void deleteLine(Line lineToDelete) {
@@ -202,7 +257,6 @@ public class MainPanel extends JPanel {
 
 
     private void makeElementActive(Element element) {
-//        setStatusForAllElements(ElementStatus.NONE);
         element.setElementStatus(ElementStatus.ACTIVE);
     }
 
@@ -246,12 +300,27 @@ public class MainPanel extends JPanel {
         return nodes.stream().filter(node -> node.hasStatus(status)).findFirst().orElse(null);
     }
 
-    private Node getNodeByPoint(int x, int y) {
+    private Element getElementOrNullByPoint(int x, int y) {
+        Node currentNode = getNodeOrNullByPoint(x, y);
+        Line currentLine = getLineOrNullByPoint(x, y);
+        if (currentNode == null) {
+            return currentLine;
+        }
+        return currentNode;
+    }
+
+    private Node getNodeOrNullByPoint(int x, int y) {
         return nodes.stream().filter(node -> node.containsPoint(x, y)).findFirst().orElse(null);
     }
 
-    private Line getLineByPoint(int x, int y) {
+    private Line getLineOrNullByPoint(int x, int y) {
         return lines.stream().filter(line -> line.containsPoint(x, y)).findFirst().orElse(null);
+    }
+
+    private Collection<Element> getElementsWithNonNoneStatus() {
+        Collection<Element> elements = nodes.stream().filter(node -> !node.hasStatus(ElementStatus.NONE)).collect(Collectors.toList());
+        elements.addAll(lines.stream().filter(line -> !line.hasStatus(ElementStatus.NONE)).collect(Collectors.toList()));
+        return elements;
     }
 
     private void drawAllNodes(Graphics2D graphics2D) {
@@ -262,6 +331,17 @@ public class MainPanel extends JPanel {
         lines.forEach(line -> line.draw(graphics2D));
     }
 
+    private void drawGrid(Graphics2D graphics2D) {
+        Color gridColor = Palette.getFontColor();
+        int red = gridColor.getRed(), green = gridColor.getGreen(), blue = gridColor.getBlue();
+        graphics2D.setColor(new Color(red, green, blue, mapIsVisible ? 30 : 60));
+        for (int x = GRID_SIZE; x < getWidth(); x += GRID_SIZE) {
+            graphics2D.drawLine(x, 0, x, getHeight());
+        }
+        for (int y = GRID_SIZE; y < getHeight(); y += GRID_SIZE) {
+            graphics2D.drawLine(0, y, getWidth(), y);
+        }
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -270,15 +350,7 @@ public class MainPanel extends JPanel {
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
         if (gridIsVisible) {
-            Color gridColor = Palette.getFontColor();
-            int red = gridColor.getRed(), green = gridColor.getGreen(), blue = gridColor.getBlue();
-            graphics2D.setColor(new Color(red, green, blue, mapIsVisible ? 30 : 60));
-            for (int x = GRID_SIZE; x < getWidth(); x += GRID_SIZE) {
-                graphics2D.drawLine(x, 0, x, getHeight());
-            }
-            for (int y = GRID_SIZE; y < getHeight(); y += GRID_SIZE) {
-                graphics2D.drawLine(0, y, getWidth(), y);
-            }
+            drawGrid(graphics2D);
         }
         if (mapIsVisible) {
             graphics2D.drawImage(getMap(), 0, 0, null);
@@ -287,40 +359,52 @@ public class MainPanel extends JPanel {
         drawAllNodes(graphics2D);
     }
 
-    public void clear() {
-        Collection<Node> nodesToDelete = getNodesByStatus(ElementStatus.ACTIVE);
-        Collection<Line> linesToDelete = getLinesByStatus(ElementStatus.ACTIVE);
-        if (nodesToDelete.isEmpty() && linesToDelete.isEmpty()) {
+    public void reset() {
+        if (getElementsWithNonNoneStatus().isEmpty()) {
             nodes.clear();
             lines.clear();
             numberOfCreatedLines = 0;
             numberOfCreatedNodes = 0;
-            repaint();
-            return;
+        } else {
+            setStatusForAllElements(ElementStatus.NONE);
         }
-        nodesToDelete.forEach(node -> node.getLines().forEach(this::deleteLine));
-        nodes.removeAll(nodesToDelete);
-        linesToDelete.forEach(this::deleteLine);
         repaint();
     }
 
-    public static boolean isMapVisible() {
+    public void deleteElements() {
+        Collection<Node> nodesToDelete = getNodesByStatus(ElementStatus.ACTIVE);
+        Collection<Line> linesToDelete = getLinesByStatus(ElementStatus.ACTIVE);
+        if (!nodesToDelete.isEmpty() || !linesToDelete.isEmpty()) {
+            nodesToDelete.forEach(node -> node.getLines().forEach(this::deleteLine));
+            nodes.removeAll(nodesToDelete);
+            linesToDelete.forEach(this::deleteLine);
+            repaint();
+        }
+    }
+
+    public boolean isMapVisible() {
         return mapIsVisible;
     }
 
-    public static void setMapVisible(boolean mapIsVisible) {
+    public void setMapVisible(boolean mapIsVisible) {
         MainPanel.mapIsVisible = mapIsVisible;
     }
 
-    public static boolean isGridVisible() {
+    public boolean isGridVisible() {
         return gridIsVisible;
     }
 
-    public static void setGridVisible(boolean gridIsVisible) {
+    public void setGridVisible(boolean gridIsVisible) {
         MainPanel.gridIsVisible = gridIsVisible;
     }
 
-    public static void setMode(Modes mode) {
+    public void setMode(Mode mode) {
         MainPanel.mode = mode;
+        this.setStatusForAllElements(ElementStatus.NONE);
+    }
+
+    public void setMetric(Metric metric) {
+        MainPanel.metric = metric;
+        reset();
     }
 }

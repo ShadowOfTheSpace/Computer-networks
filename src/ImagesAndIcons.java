@@ -1,19 +1,18 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
 public class ImagesAndIcons {
-    private static HashMap<ElementStatus, Image> lightModeTrustedNodesImage = new HashMap<>();
-    private static HashMap<ElementStatus, Image> darkModeTrustedNodesImage = new HashMap<>();
-    private static HashMap<ElementStatus, Image> lightModeNonTrustedNodesImage = new HashMap<>();
-    private static HashMap<ElementStatus, Image> darkModeNonTrustedNodesImage = new HashMap<>();
-    private static Image moonIcon;
-    private static Image sunIcon;
-    private static Image darkThemeMap;
-    private static Image lightThemeMap;
+    private static final HashMap<ElementStatus, Image> lightModeTrustedNodesImage = new HashMap<>();
+    private static final HashMap<ElementStatus, Image> darkModeTrustedNodesImage = new HashMap<>();
+    private static final HashMap<ElementStatus, Image> lightModeNonTrustedNodesImage = new HashMap<>();
+    private static final HashMap<ElementStatus, Image> darkModeNonTrustedNodesImage = new HashMap<>();
+    private static final Image moonIcon;
+    private static final Image sunIcon;
+    private static final Image darkThemeMap;
+    private static final Image lightThemeMap;
 
     static {
         try {
@@ -27,20 +26,20 @@ public class ImagesAndIcons {
             lightModeNonTrustedNodesImage.put(ElementStatus.ACTIVE, getImageFromFile("images/nonTrustedNode-light-active.png", Node.getSizeOfNode()));
             darkModeNonTrustedNodesImage.put(ElementStatus.ACTIVE, getImageFromFile("images/nonTrustedNode-dark-active.png", Node.getSizeOfNode()));
 
-            lightModeTrustedNodesImage.put(ElementStatus.NODE_IS_MOVABLE, getImageFromFile("images/trustedNode-light-active.png", Node.getSizeOfNode()));
-            darkModeTrustedNodesImage.put(ElementStatus.NODE_IS_MOVABLE, getImageFromFile("images/trustedNode-dark-active.png", Node.getSizeOfNode()));
-            lightModeNonTrustedNodesImage.put(ElementStatus.NODE_IS_MOVABLE, getImageFromFile("images/nonTrustedNode-light-active.png", Node.getSizeOfNode()));
-            darkModeNonTrustedNodesImage.put(ElementStatus.NODE_IS_MOVABLE, getImageFromFile("images/nonTrustedNode-dark-active.png", Node.getSizeOfNode()));
+            lightModeTrustedNodesImage.put(ElementStatus.MOVING_NODE, getImageFromFile("images/trustedNode-light-active.png", Node.getSizeOfNode()));
+            darkModeTrustedNodesImage.put(ElementStatus.MOVING_NODE, getImageFromFile("images/trustedNode-dark-active.png", Node.getSizeOfNode()));
+            lightModeNonTrustedNodesImage.put(ElementStatus.MOVING_NODE, getImageFromFile("images/nonTrustedNode-light-active.png", Node.getSizeOfNode()));
+            darkModeNonTrustedNodesImage.put(ElementStatus.MOVING_NODE, getImageFromFile("images/nonTrustedNode-dark-active.png", Node.getSizeOfNode()));
 
-            lightModeTrustedNodesImage.put(ElementStatus.NODE_IS_START_NODE, getImageFromFile("images/trustedNode-light-start.png", Node.getSizeOfNode()));
-            darkModeTrustedNodesImage.put(ElementStatus.NODE_IS_START_NODE, getImageFromFile("images/trustedNode-dark-start.png", Node.getSizeOfNode()));
-            lightModeNonTrustedNodesImage.put(ElementStatus.NODE_IS_START_NODE, getImageFromFile("images/nonTrustedNode-light-start.png", Node.getSizeOfNode()));
-            darkModeNonTrustedNodesImage.put(ElementStatus.NODE_IS_START_NODE, getImageFromFile("images/nonTrustedNode-dark-start.png", Node.getSizeOfNode()));
+            lightModeTrustedNodesImage.put(ElementStatus.START_NODE, getImageFromFile("images/trustedNode-light-start.png", Node.getSizeOfNode()));
+            darkModeTrustedNodesImage.put(ElementStatus.START_NODE, getImageFromFile("images/trustedNode-dark-start.png", Node.getSizeOfNode()));
+            lightModeNonTrustedNodesImage.put(ElementStatus.START_NODE, getImageFromFile("images/nonTrustedNode-light-start.png", Node.getSizeOfNode()));
+            darkModeNonTrustedNodesImage.put(ElementStatus.START_NODE, getImageFromFile("images/nonTrustedNode-dark-start.png", Node.getSizeOfNode()));
 
-            lightModeTrustedNodesImage.put(ElementStatus.NODE_CAN_BE_END_NODE, getImageFromFile("images/trustedNode-light-end.png", Node.getSizeOfNode()));
-            darkModeTrustedNodesImage.put(ElementStatus.NODE_CAN_BE_END_NODE, getImageFromFile("images/trustedNode-dark-end.png", Node.getSizeOfNode()));
-            lightModeNonTrustedNodesImage.put(ElementStatus.NODE_CAN_BE_END_NODE, getImageFromFile("images/nonTrustedNode-light-end.png", Node.getSizeOfNode()));
-            darkModeNonTrustedNodesImage.put(ElementStatus.NODE_CAN_BE_END_NODE, getImageFromFile("images/nonTrustedNode-dark-end.png", Node.getSizeOfNode()));
+            lightModeTrustedNodesImage.put(ElementStatus.END_NODE, getImageFromFile("images/trustedNode-light-end.png", Node.getSizeOfNode()));
+            darkModeTrustedNodesImage.put(ElementStatus.END_NODE, getImageFromFile("images/trustedNode-dark-end.png", Node.getSizeOfNode()));
+            lightModeNonTrustedNodesImage.put(ElementStatus.END_NODE, getImageFromFile("images/nonTrustedNode-light-end.png", Node.getSizeOfNode()));
+            darkModeNonTrustedNodesImage.put(ElementStatus.END_NODE, getImageFromFile("images/nonTrustedNode-dark-end.png", Node.getSizeOfNode()));
             darkThemeMap = ImageIO.read(new File("images/darkThemeMap.png"));
             lightThemeMap = ImageIO.read(new File("images/lightThemeMap.png"));
             moonIcon = getImageFromFile("images/moon.png",SwitchButton.SIZE_OF_CYCLE);
@@ -85,6 +84,4 @@ public class ImagesAndIcons {
             }
         }
     }
-
-
 }

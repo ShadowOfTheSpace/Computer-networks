@@ -19,14 +19,17 @@ public abstract class Element implements Drawable{
         return elementName;
     }
 
-    public void setElementName(String elementName) {
-        this.elementName = elementName;
-    }
-
     public ElementStatus getElementStatus() {
         return elementStatus;
     }
 
+    public void changeActiveStatus(){
+        if(this.hasStatus(ElementStatus.ACTIVE)){
+            this.elementStatus = ElementStatus.NONE;
+        }else {
+            this.elementStatus = ElementStatus.ACTIVE;
+        }
+    }
     public abstract boolean containsPoint(int x, int y);
 
     public void setElementStatus(ElementStatus elementStatus) {
@@ -35,5 +38,10 @@ public abstract class Element implements Drawable{
 
     public boolean hasStatus(ElementStatus elementStatus) {
         return this.elementStatus == elementStatus;
+    }
+
+    @Override
+    public String toString() {
+        return this.elementName;
     }
 }

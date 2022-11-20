@@ -1,19 +1,17 @@
+import javax.swing.border.AbstractBorder;
 import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
-import javax.accessibility.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 class RoundedCornerBorder extends AbstractBorder {
-    protected static final int ARC = 40;
+    protected static final int ANGLE = 40;
 
     @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Area round = new Area(new RoundRectangle2D.Float(x, y + 1, width + 20, height - 3, ARC, ARC));
+        Area round = new Area(new RoundRectangle2D.Float(x, y + 1, width + 20, height - 3, ANGLE, ANGLE));
         Area corner = new Area(new Rectangle2D.Float(x, y, width / 2.0f, height));
         corner.subtract(round);
         g2.setColor(Palette.getMainPanelBackground());

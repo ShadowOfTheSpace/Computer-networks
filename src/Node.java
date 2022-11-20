@@ -22,8 +22,17 @@ public class Node extends Element {
         this.ipAddress = RandomIPAddressGenerator.getIP();
     }
 
+    public Line getLineToOtherNode(Node otherNode) {
+        for (Line line : lines) {
+            if (line.getOtherNode(this).equals(otherNode)) {
+                return line;
+            }
+        }
+        return null;
+    }
+
     public void setCoordinates(int x, int y) {
-        if (MainPanel.isGridVisible()) {
+        if (Window.mainPanel.isGridVisible()) {
             this.x = Math.round(x / (float) MainPanel.GRID_SIZE) * MainPanel.GRID_SIZE;
             this.y = Math.round(y / (float) MainPanel.GRID_SIZE) * MainPanel.GRID_SIZE;
         } else {
@@ -47,6 +56,7 @@ public class Node extends Element {
     public boolean isTrustful() {
         return trustFactor;
     }
+
 
     public void changeTrustFactor() {
         this.trustFactor = !this.trustFactor;
@@ -93,22 +103,27 @@ public class Node extends Element {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        graphics2D.drawImage(ImagesAndIcons.getImage(Window.darkModeEnabled, this.trustFactor, this.elementStatus), (int) getEllipse().getX(), (int) getEllipse().getY(), null);
+        int circleX = (int) this.getEllipse().getX(), circleY = (int) this.getEllipse().getY();
+        graphics2D.drawImage(ImagesAndIcons.getImage(Window.darkModeEnabled, this.trustFactor, this.elementStatus), circleX, circleY, null);
         graphics2D.setStroke(new BasicStroke(3));
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
-        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() + 3, (int) this.getEllipse().getY() - 3);
-        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() + 3, (int) this.getEllipse().getY() + 3);
-        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() - 3, (int) this.getEllipse().getY() - 3);
-        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX() - 3, (int) this.getEllipse().getY() + 3);
+        graphics2D.drawString(this.elementName, circleX + 3, circleY - 3);
+        graphics2D.drawString(this.elementName, circleX + 3, circleY + 3);
+        graphics2D.drawString(this.elementName, circleX - 3, circleY - 3);
+        graphics2D.drawString(this.elementName, circleX - 3, circleY + 3);
         graphics2D.setColor(Palette.getFontColor());
-        graphics2D.drawString(this.elementName, (int) this.getEllipse().getX(), (int) this.getEllipse().getY());
+        graphics2D.drawString(this.elementName, circleX, circleY);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Node node = (Node) o;
         return id == node.id && x == node.x && y == node.y;
     }

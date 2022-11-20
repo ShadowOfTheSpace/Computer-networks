@@ -1,12 +1,15 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 public abstract class SwitchButton extends JComponent {
     public static final int WIDTH = 110;
     public static final int HEIGHT = 50;
     public static final int SIZE_OF_CYCLE = 40;
-    private static final int ARC = 50;
+    private static final int ANGLE = 50;
     private final int startPosition = (HEIGHT - SIZE_OF_CYCLE) / 2;
     private final int endPosition = WIDTH - SIZE_OF_CYCLE - startPosition;
     private float currentPosition = startPosition;
@@ -28,8 +31,7 @@ public abstract class SwitchButton extends JComponent {
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                int rectangleX = (getWidth() - WIDTH) / 2, rectangleY = (getHeight() - HEIGHT) / 2;
-                if (new Rectangle(rectangleX, rectangleY, WIDTH, HEIGHT).contains(e.getX(), e.getY())) {
+                if (mouseInsideButton(e.getX(), e.getY())) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
                 } else {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -37,11 +39,19 @@ public abstract class SwitchButton extends JComponent {
             }
         });
         this.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Window.mainPanel.requestFocus();
+            }
+
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    buttonPressed();
-                    timer.start();
+                if (mouseInsideButton(e.getX(), e.getY())){
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+                        buttonPressed();
+                        timer.start();
+                    }
                 }
             }
         });
@@ -74,10 +84,12 @@ public abstract class SwitchButton extends JComponent {
     abstract public boolean checkCondition();
 
     abstract public void buttonPressed();
-//    private boolean mouseInsideButton(int x, int y){
-//        Ellipse2D buttonArea = new Ellipse2D.Float(this.)
-//        return false;
-//    }
+
+    private boolean mouseInsideButton(int x, int y){
+        float rectangleX = (getWidth() - WIDTH) / 2.0f, rectangleY = (getHeight() - HEIGHT) / 2.0f;
+        RoundRectangle2D buttonArea = new RoundRectangle2D.Float(rectangleX,rectangleY,WIDTH,HEIGHT, ANGLE,ANGLE);
+        return buttonArea.contains(x,y);
+    }
 
     @Override
     public void paint(Graphics g) {
@@ -88,15 +100,11 @@ public abstract class SwitchButton extends JComponent {
         graphics2D.setColor(Palette.getMenuPanelBackground());
         graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
         graphics2D.setColor(Palette.getSwitchOffBackground());
-        graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
-//        graphics2D.setColor(Palette.getButtonBorderColor());
-//        graphics2D.setStroke(new BasicStroke(2));
-        graphics2D.drawRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
+        graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ANGLE, ANGLE);
+        graphics2D.drawRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ANGLE, ANGLE);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
         graphics2D.setColor(Palette.getSwitchOnBackground());
-        graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
-//        graphics2D.setColor(Palette.getButtonBorderColor());
-//        graphics2D.drawRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ARC, ARC);
+        graphics2D.fillRoundRect(rectangleX, rectangleY, WIDTH, HEIGHT, ANGLE, ANGLE);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
         graphics2D.setColor(new Color(255, 255, 255, alpha));
         graphics2D.fillOval((int) (rectangleX + currentPosition), rectangleY + (HEIGHT - SIZE_OF_CYCLE) / 2, SIZE_OF_CYCLE, SIZE_OF_CYCLE);

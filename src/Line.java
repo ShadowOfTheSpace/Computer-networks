@@ -9,30 +9,31 @@ public class Line extends Element {
     private Node endNode;
     private int cursorX, cursorY;
     private int length;
-    private  Color darkLineColor = Color.WHITE;
-    private  Color lightLineColor = Color.BLACK;
+    private Color darkLineColor = Color.WHITE;
+    private Color lightLineColor = Color.BLACK;
     private static final HashMap<Color, Color> darkColorMap = new HashMap<>();
     private static final HashMap<Color, Color> lightColorMap = new HashMap<>();
 
     static {
         darkColorMap.put(Color.WHITE, Color.GREEN);
         darkColorMap.put(Color.GREEN, Color.RED);
-        darkColorMap.put(Color.RED, new Color(0,0,0,0));
-        darkColorMap.put(new Color(0,0,0,0), Color.WHITE);
+        darkColorMap.put(Color.RED, new Color(0, 0, 0, 0));
+        darkColorMap.put(new Color(0, 0, 0, 0), Color.WHITE);
 
         lightColorMap.put(Color.BLACK, Color.GREEN.darker());
         lightColorMap.put(Color.GREEN.darker(), Color.RED.darker());
-        lightColorMap.put(Color.RED.darker(), new Color(0,0,0,0));
-        lightColorMap.put(new Color(0,0,0,0), Color.BLACK);
+        lightColorMap.put(Color.RED.darker(), new Color(0, 0, 0, 0));
+        lightColorMap.put(new Color(0, 0, 0, 0), Color.BLACK);
     }
 
+
     public void changeColor() {
-        darkLineColor = darkColorMap.get(darkLineColor);
-        lightLineColor = lightColorMap.get(lightLineColor);
+//        darkLineColor = darkColorMap.get(darkLineColor);
+//        lightLineColor = lightColorMap.get(lightLineColor);
     }
 
     public Line(int id, Node startNode) {
-        super(id, "", ElementStatus.LINE_STILL_DRAWING);
+        super(id, "", ElementStatus.DRAWING_LINE);
         this.startNode = startNode;
         this.cursorX = startNode.getX();
         this.cursorY = startNode.getY();
@@ -51,6 +52,13 @@ public class Line extends Element {
         return length;
     }
 
+    public Node getOtherNode(Node node) {
+        return startNode.equals(node) ? endNode : startNode;
+    }
+
+    public boolean isTrustful() {
+        return startNode.isTrustful() && endNode.isTrustful();
+    }
 
     public void setEndNodeAndLength(Node endNode, int length) {
         this.endNode = endNode;
@@ -91,23 +99,26 @@ public class Line extends Element {
             newLine = new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
         }
         if (this.hasStatus(ElementStatus.NONE)) {
-            graphics2D.setColor(Window.darkModeEnabled ? darkLineColor : lightLineColor);
-            graphics2D.setStroke(new BasicStroke(5));
-            graphics2D.draw(newLine);
+            drawLine(graphics2D, newLine, Palette.getLineNoneColor(), 5, false);
         } else if (this.hasStatus(ElementStatus.ACTIVE)) {
-            graphics2D.setColor(Color.ORANGE);
-            graphics2D.setStroke(new BasicStroke(11));
-            graphics2D.draw(newLine);
-            graphics2D.setColor(Window.darkModeEnabled ? darkLineColor : lightLineColor);
-            graphics2D.setStroke(new BasicStroke(5));
-            graphics2D.draw(newLine);
+            drawLine(graphics2D, newLine, Palette.LINE_COLOR_ACTIVE, 11, false);
+            drawLine(graphics2D, newLine, Palette.getLineNoneColor(), 5, false);
+        } else if (this.hasStatus(ElementStatus.PART_OF_PATH)) {
+            drawLine(graphics2D, newLine, Palette.getLineColorWithTrustFactor(this.isTrustful()), 5, false);
+        } else if (this.hasStatus(ElementStatus.NOT_PART_OF_TREE)) {
+            drawLine(graphics2D, newLine, Palette.LINE_COLOR_NOT_PART_OF_TREE, 5, false);
         } else {
-            graphics2D.setColor(Window.darkModeEnabled ? darkLineColor : lightLineColor);
-            graphics2D.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
-                    1, new float[]{20}, 1));
-            graphics2D.draw(newLine);
-
+            drawLine(graphics2D, newLine, Palette.getLineNoneColor(), 5, true);
         }
+    }
+
+
+    private void drawLine(Graphics2D graphics2D, Line2D line, Color color, int strokeWith, boolean isSeparated) {
+        graphics2D.setColor(color);
+        Stroke stroke = isSeparated ? new BasicStroke(strokeWith, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                1, new float[]{20}, 1) : new BasicStroke(strokeWith);
+        graphics2D.setStroke(stroke);
+        graphics2D.draw(line);
     }
 
     @Override

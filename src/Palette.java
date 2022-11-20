@@ -23,7 +23,33 @@ public class Palette {
     public static final Color LIGHT_BUTTON_BORDER_COLOR = MAIN_PANEL_DARK_BACKGROUND;
 
     public static final Color LIGHT_SWITCH_ON_BUTTON_BACKGROUND = BUTTON_LIGHT_BACKGROUND;
-    public static final Color LIGHT_SWITCH_OFF_BUTTON_BACKGROUND =BUTTON_LIGHT_PRESS_BACKGROUND;
+    public static final Color LIGHT_SWITCH_OFF_BUTTON_BACKGROUND = BUTTON_LIGHT_PRESS_BACKGROUND;
+
+    public static final Color LINE_LIGHT_COLOR_NONE = MAIN_PANEL_DARK_BACKGROUND;
+    public static final Color LINE_LIGHT_COLOR_TRUSTFUL = Color.GREEN;
+    public static final Color LINE_LIGHT_COLOR_NON_TRUSTFUL = Color.RED;
+
+    public static final Color LINE_DARK_COLOR_NONE = MAIN_PANEL_LIGHT_BACKGROUND;
+    public static final Color LINE_DARK_COLOR_TRUSTFUL = Color.GREEN.darker();
+    public static final Color LINE_DARK_COLOR_NON_TRUSTFUL = Color.RED.darker();
+    public static final Color LINE_COLOR_ACTIVE = Color.ORANGE;
+    public static final Color LINE_COLOR_NOT_PART_OF_TREE = new Color(127,127,127, 50);
+
+    public static Color getLineNoneColor() {
+        return Window.darkModeEnabled ? LINE_DARK_COLOR_NONE : LINE_LIGHT_COLOR_NONE;
+    }
+
+    public static Color getLineTrustfulColor() {
+        return Window.darkModeEnabled ? LINE_DARK_COLOR_TRUSTFUL : LINE_LIGHT_COLOR_TRUSTFUL;
+    }
+
+    public static Color getLineNonTrustfulColor() {
+        return Window.darkModeEnabled ? LINE_DARK_COLOR_NON_TRUSTFUL : LINE_LIGHT_COLOR_NON_TRUSTFUL;
+    }
+
+    public static Color getLineColorWithTrustFactor(boolean trustFactor) {
+        return trustFactor ? getLineTrustfulColor() : getLineNonTrustfulColor();
+    }
 
     public static Color getMainPanelBackground() {
         return Window.darkModeEnabled ? MAIN_PANEL_DARK_BACKGROUND : MAIN_PANEL_LIGHT_BACKGROUND;
@@ -56,6 +82,7 @@ public class Palette {
     public static Color getButtonBorderColor() {
         return Window.darkModeEnabled ? DARK_BUTTON_BORDER_COLOR : LIGHT_BUTTON_BORDER_COLOR;
     }
+
 
     public static Color getFontColor() {
         return Window.darkModeEnabled ? DARK_FONT_COLOR : LIGHT_FONT_COLOR;

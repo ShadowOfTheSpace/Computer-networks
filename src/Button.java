@@ -3,9 +3,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 
-public class Button extends JButton {
+public class Button extends JButton implements MouseListener {
     private Color currentBackgroundColor = Palette.getButtonBackground();
 
 
@@ -26,39 +27,7 @@ public class Button extends JButton {
         this.setContentAreaFilled(false);
         this.setBorder(null);
         this.setOpaque(true);
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                currentBackgroundColor = Palette.getButtonPressBackground();
-                repaint();
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (mouseIsInsideButton) {
-                    currentBackgroundColor = Palette.getButtonHoverBackground();
-                } else {
-                    currentBackgroundColor = Palette.getButtonBackground();
-                }
-                repaint();
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                setCursor(new Cursor(Cursor.HAND_CURSOR));
-                mouseIsInsideButton = true;
-                currentBackgroundColor = Palette.getButtonHoverBackground();
-                repaint();
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                mouseIsInsideButton = false;
-                currentBackgroundColor = Palette.getButtonBackground();
-                repaint();
-            }
-        });
+        this.addMouseListener(this);
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -112,4 +81,42 @@ public class Button extends JButton {
         int blue = effectColor.getBlue();
         return new Color[]{new Color(red, green, blue, 70), new Color(red, green, blue, 20), new Color(red, green, blue, 0)};
     }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        currentBackgroundColor = Palette.getButtonPressBackground();
+        repaint();
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (mouseIsInsideButton) {
+            currentBackgroundColor = Palette.getButtonHoverBackground();
+        } else {
+            currentBackgroundColor = Palette.getButtonBackground();
+        }
+        repaint();
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
+        mouseIsInsideButton = true;
+        currentBackgroundColor = Palette.getButtonHoverBackground();
+        repaint();
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        mouseIsInsideButton = false;
+        currentBackgroundColor = Palette.getButtonBackground();
+        repaint();
+    }
+
 }

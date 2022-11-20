@@ -1,23 +1,47 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class Window extends JFrame {
     static boolean darkModeEnabled = true;
     static boolean fullScreenEnabled = false;
-    static Button clearButton = new Button("Clear");
-    static CustomComboBox modeChooser = new CustomComboBox(new Modes[]{Modes.CREATING_NODES, Modes.CREATING_LINES, Modes.FINDING_PATH, Modes.FINDING_SHORTEST_PATH_TREE});
-    static CustomComboBox metricChooser = new CustomComboBox(new Modes[]{Modes.CREATING_NODES, Modes.CREATING_LINES, Modes.FINDING_PATH});
-    static MenuPanel menuPanel = new MenuPanel();
-    static MainPanel mainPanel = new MainPanel();
+    static Button clearButton;
+    static CustomComboBox modeChooser;
+    static CustomComboBox metricChooser;
+    static MenuPanel menuPanel;
+    static MainPanel mainPanel;
 
     public Window() {
         this.setTitle("Modified Dijkstra`s algorithm by Tkachuk Oleksandr");
         this.setUndecorated(fullScreenEnabled);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-
         this.setLayout(new GridBagLayout());
+        clearButton = new Button("Clear") {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                Window.mainPanel.requestFocus();
+            }
+        };
+        clearButton.addActionListener((event) -> mainPanel.reset());
+
+
+        mainPanel = new MainPanel();
+
+        modeChooser = new CustomComboBox(Mode.CREATING_NODES, Mode.CREATING_LINES, Mode.FINDING_PATH, Mode.FINDING_TREE) {
+            @Override
+            public void itemChanged() {
+                mainPanel.setMode((Mode) getSelectedItem());
+            }
+        };
+        metricChooser = new CustomComboBox(Metric.HOPS, Metric.CONGESTION, Metric.DISTANCE) {
+            @Override
+            public void itemChanged() {
+                mainPanel.setMetric((Metric) getSelectedItem());
+            }
+        };
+        menuPanel = new MenuPanel();
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
         gridBagConstraints.gridx = 0;
@@ -32,8 +56,6 @@ public class Window extends JFrame {
         gridBagConstraints.weightx = 0.05;
         this.add(menuPanel, gridBagConstraints);
 
-        clearButton.addActionListener((event) -> mainPanel.clear());
-
 
         menuPanel.setLayout(new GridBagLayout());
 
@@ -45,7 +67,6 @@ public class Window extends JFrame {
         menuPanel.add(modePanel, getGbc(0, 2, 3, 1, 1, 0.25));
         menuPanel.add(switchPanel, getGbc(0, 5, 2, 1, 1, 0.4));
 
-
         switchPanel.setLayout(new GridBagLayout());
 
         SubMenuPanel clearPanel = new SubMenuPanel(new GridBagLayout());
@@ -56,29 +77,29 @@ public class Window extends JFrame {
         clearPanel.add(clearButton);
 
         gridSwitchPanel.add(new MenuPanelLabel("Grid", JLabel.BOTTOM, JLabel.CENTER));
-        gridSwitchPanel.add(new SwitchButton(Palette.BUTTON_DARK_BACKGROUND, Palette.BUTTON_LIGHT_BACKGROUND, 255, MainPanel.isGridVisible()) {
+        gridSwitchPanel.add(new SwitchButton(Palette.BUTTON_DARK_BACKGROUND, Palette.BUTTON_LIGHT_BACKGROUND, 255, mainPanel.isGridVisible()) {
             @Override
             public boolean checkCondition() {
-                return MainPanel.isGridVisible();
+                return mainPanel.isGridVisible();
             }
 
             @Override
             public void buttonPressed() {
-                MainPanel.setGridVisible(!MainPanel.isGridVisible());
+                mainPanel.setGridVisible(!mainPanel.isGridVisible());
                 mainPanel.repaint();
             }
         });
 
         mapSwitchPanel.add(new MenuPanelLabel("Map", JLabel.BOTTOM, JLabel.CENTER));
-        mapSwitchPanel.add(new SwitchButton(Palette.BUTTON_DARK_BACKGROUND, Palette.BUTTON_LIGHT_BACKGROUND, 255, MainPanel.isMapVisible()) {
+        mapSwitchPanel.add(new SwitchButton(Palette.BUTTON_DARK_BACKGROUND, Palette.BUTTON_LIGHT_BACKGROUND, 255, mainPanel.isMapVisible()) {
             @Override
             public boolean checkCondition() {
-                return MainPanel.isMapVisible();
+                return mainPanel.isMapVisible();
             }
 
             @Override
             public void buttonPressed() {
-                MainPanel.setMapVisible(!MainPanel.isMapVisible());
+                mainPanel.setMapVisible(!mainPanel.isMapVisible());
                 mainPanel.repaint();
             }
         });
