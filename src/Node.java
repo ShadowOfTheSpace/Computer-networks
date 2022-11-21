@@ -72,6 +72,11 @@ public class Node extends Element {
         return !firstArea.isEmpty();
     }
 
+    public static int calculateDistance(Node node1, Node node2) {
+        int x1 = node1.getX(), x2 = node2.getX(), y1 = node1.getY(), y2 = node2.getY();
+        return (int) Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    }
+
     @Override
     public boolean containsPoint(int x, int y) {
         return new Area(this.getEllipse()).contains(x, y);

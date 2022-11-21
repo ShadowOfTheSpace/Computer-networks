@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class Window extends JFrame {
     static boolean darkModeEnabled = true;
@@ -10,6 +11,7 @@ public class Window extends JFrame {
     static CustomComboBox metricChooser;
     static MenuPanel menuPanel;
     static MainPanel mainPanel;
+    static ArrayList<LineInfoWindow> lineInfoWindows = new ArrayList<>();
 
     public Window() {
         this.setTitle("Modified Dijkstra`s algorithm by Tkachuk Oleksandr");
@@ -17,13 +19,14 @@ public class Window extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setLayout(new GridBagLayout());
-        clearButton = new Button("Clear") {
+        clearButton = new Button("Clear",false) {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 Window.mainPanel.requestFocus();
             }
         };
+        clearButton.setPreferredSize(new Dimension(250, 60));
         clearButton.addActionListener((event) -> mainPanel.reset());
 
 
@@ -42,19 +45,10 @@ public class Window extends JFrame {
             }
         };
         menuPanel = new MenuPanel();
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 8;
-        gridBagConstraints.weightx = 0.95;
-        gridBagConstraints.weighty = 1;
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        this.add(mainPanel, gridBagConstraints);
-        gridBagConstraints.gridx = 8;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.weightx = 0.05;
-        this.add(menuPanel, gridBagConstraints);
+//        this.add(new TopBar(1700, ""),getGbc(0,0,1,10,1,0.1));
+        this.add(mainPanel, getGbc(0, 1, 1, 8, 0.95, 1));
+        this.add(menuPanel, getGbc(8, 1, 1, 2, 0.06, 1));
 
 
         menuPanel.setLayout(new GridBagLayout());
@@ -126,6 +120,7 @@ public class Window extends JFrame {
                 Window.darkModeEnabled = !Window.darkModeEnabled;
                 Window.menuPanel.changeTheme();
                 Window.mainPanel.paintImmediately(0, 0, Window.mainPanel.getWidth(), Window.mainPanel.getHeight());
+                Window.lineInfoWindows.forEach(LineInfoWindow::changeTheme);
             }
         });
 
@@ -159,7 +154,7 @@ public class Window extends JFrame {
         this.setVisible(true);
     }
 
-    private GridBagConstraints getGbc(int x, int y, int height, int width, double weightX, double weightY) {
+    public static GridBagConstraints getGbc(int x, int y, int height, int width, double weightX, double weightY) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = x;
         gbc.gridy = y;

@@ -4,7 +4,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
-class RoundedCornerBorder extends AbstractBorder {
+class RoundedCornerBorderForMenuPanel extends AbstractBorder {
     protected static final int ANGLE = 40;
 
     @Override

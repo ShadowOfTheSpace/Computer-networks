@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class MainPanel extends JPanel {
@@ -181,8 +180,16 @@ public class MainPanel extends JPanel {
                             drawTree();
                         }
                     }
-                    repaint();
+                } else if (SwingUtilities.isRightMouseButton(e)) {
+                    Node currentNode = getNodeOrNullByPoint(x, y);
+                    Line currentLine = getLineOrNullByPoint(x, y);
+                    if (currentNode != null) {
+
+                    } else if (currentLine != null) {
+                        Window.lineInfoWindows.add(new LineInfoWindow(currentLine, metric));
+                    }
                 }
+                repaint();
             }
 
             @Override
@@ -202,10 +209,12 @@ public class MainPanel extends JPanel {
                             Line currentLine = getLineOrNullByStatus(ElementStatus.DRAWING_LINE);
                             if (currentLine != null) {
                                 if (!currentLine.getStartNode().equals(currentNode)) {
-                                    currentLine.setEndNodeAndLength(currentNode, 1);
+                                    currentLine.setEndNode(currentNode);
                                     currentLine.setElementStatus(ElementStatus.NONE);
                                     if (!currentNode.addLine(currentLine) || !currentLine.getStartNode().addLine(currentLine)) {
                                         lines.removeIf(line -> line.getId() == currentLine.getId());
+                                    } else {
+                                        currentLine.setLength(getLengthOfLine(currentLine));
                                     }
                                 } else {
                                     lines.remove(currentLine);
@@ -347,6 +356,8 @@ public class MainPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.fillRect(0, 0, this.getWidth(), this.getHeight());
         if (gridIsVisible) {
@@ -405,6 +416,20 @@ public class MainPanel extends JPanel {
 
     public void setMetric(Metric metric) {
         MainPanel.metric = metric;
+        setStatusForAllElements(ElementStatus.NONE);
         reset();
+    }
+
+    public static Metric getMetric() {
+        return metric;
+    }
+
+    private int getLengthOfLine(Line line) {
+        if (metric == Metric.CONGESTION) {
+            Window.lineInfoWindows.add(new LineInfoWindow(line, metric));
+        } else if (metric == Metric.DISTANCE) {
+            return Node.calculateDistance(line.getStartNode(), line.getEndNode());
+        }
+        return 1;
     }
 }

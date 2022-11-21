@@ -7,7 +7,7 @@ public class MenuPanel extends JPanel {
     public MenuPanel() {
         this.setOpaque(true);
         changeTheme();
-        this.setBorder(new RoundedCornerBorder());
+        this.setBorder(new RoundedCornerBorderForMenuPanel());
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {

@@ -21,7 +21,7 @@ public abstract class CustomComboBox extends JPanel {
         this.setOpaque(true);
         this.setFocusable(false);
         popUpButtons = new Button[items.length];
-        comboBoxButton = new Button(items[0].toString()) {
+        comboBoxButton = new Button(items[0].toString(), false) {
             @Override
             public void paint(Graphics g) {
                 super.paint(g);
@@ -50,14 +50,18 @@ public abstract class CustomComboBox extends JPanel {
         });
         this.setPreferredSize(new Dimension(COMBO_BOX_BUTTON_WIDTH, COMBO_BOX_BUTTON_HEIGHT + (items.length) * POPUP_BUTTON_HEIGHT));
         this.add(comboBoxButton);
-        popUpPanel = new JPanel(null);
-        popUpPanel.setBackground(Color.GREEN);
+        popUpPanel = new SubMenuPanel(null);
         popUpPanel.setBounds(COMBO_BOX_BUTTON_WIDTH - POPUP_BUTTON_WIDTH, COMBO_BOX_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, items.length * POPUP_BUTTON_HEIGHT);
         popUpPanel.setVisible(false);
         popUpPanel.setFocusable(true);
         this.add(popUpPanel);
         for (int i = 0; i < items.length; i++) {
-            popUpButtons[i] = new Button(items[i].toString());
+            popUpButtons[i] = new Button(items[i].toString(), true) {
+                @Override
+                public float getAlpha() {
+                    return this.getText().equals(comboBoxButton.getText()) ? 1 : 0.8f;
+                }
+            };
             popUpButtons[i].setBounds(0, i * POPUP_BUTTON_HEIGHT, POPUP_BUTTON_WIDTH, POPUP_BUTTON_HEIGHT);
             int finalI = i;
             popUpButtons[i].addActionListener(new AbstractAction() {
@@ -84,9 +88,10 @@ public abstract class CustomComboBox extends JPanel {
         }
     }
 
-    public Object getSelectedItem(){
+    public Object getSelectedItem() {
         return selectedItem;
     }
+
     public abstract void itemChanged();
 
     public void hidePopUp() {

@@ -1,85 +1,54 @@
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
 
 public class Button extends JButton implements MouseListener {
-    private Color currentBackgroundColor = Palette.getButtonBackground();
-
-
-    private static Color effectColor = Color.WHITE;
+    protected Color currentBackgroundColor = Palette.getButtonBackground();
     private boolean mouseIsInsideButton = false;
-    private int x, y;
+    protected boolean transparency;
 
     public void changeTheme() {
         this.currentBackgroundColor = Palette.getButtonBackground();
         repaint();
     }
 
-    public Button(String text) {
+    public Button(String text, boolean transparency) {
         super(text);
-        this.setPreferredSize(new Dimension(250,60));
         this.setFont(new Font("Arial", Font.BOLD, 24));
         this.setFocusable(false);
         this.setContentAreaFilled(false);
         this.setBorder(null);
         this.setOpaque(true);
         this.addMouseListener(this);
-        this.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                x = e.getX();
-                y = e.getY();
-                repaint();
-            }
-        });
+        this.transparency = transparency;
     }
 
     @Override
     public void paint(Graphics g) {
-        Graphics2D graphics2D = (Graphics2D) g;
+        Graphics2D graphics2D = (Graphics2D) g.create();
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-//        graphics2D.setComposite(AlphaComposite.SrcOut);
-//        Shape mouseOver = new Area(new Ellipse2D.Double(x - 5, y - 5, 10, 10));
-//
-//
-//        if (mouseIsInsideButton) {
-//            graphics2D.setPaint(new RadialGradientPaint(new Point(x, y), 10, new float[]{0.0f, 0.5f, 1.0f}, getEffectColor(Color.WHITE)));
-//            graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 0.3f));
-//
-//
-//        }
-//        graphics2D.setColor(Color.WHITE);
-//        graphics2D.fill(mouseOver);
-//        graphics2D.setColor(currentBackgroundColor);
-//        graphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-
-
-        graphics2D.setColor(MenuPanel.getBackgroundColor());
+        graphics2D.setColor(Palette.getMenuPanelBackground());
         graphics2D.fillRect(0, 0, getWidth(), getHeight());
-        graphics2D.setColor(currentBackgroundColor);
+        Color color = currentBackgroundColor;
+        if (transparency) {
+            int red = color.getRed();
+            int green = color.getGreen();
+            int blue = color.getBlue();
+            color = new Color(red, green, blue, (int) (255 * getAlpha()));
+        }
+        graphics2D.setColor(color);
         graphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-//        graphics2D.setColor(Palette.getButtonBorderColor());
-//        graphics2D.setStroke(new BasicStroke(2));
-//        graphics2D.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 10, 10);
+        drawText(graphics2D);
+    }
+
+    protected void drawText(Graphics2D graphics2D) {
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
         graphics2D.setColor(Palette.getFontColor());
         FontMetrics fm = getFontMetrics(getFont());
         int textX = ((getWidth() - fm.stringWidth(getText())) / 2);
         int textY = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
         graphics2D.drawString(getText(), textX, textY);
-    }
-
-    public Color[] getEffectColor(Color effectColor) {
-        Button.effectColor = effectColor;
-        int red = effectColor.getRed();
-        int green = effectColor.getGreen();
-        int blue = effectColor.getBlue();
-        return new Color[]{new Color(red, green, blue, 70), new Color(red, green, blue, 20), new Color(red, green, blue, 0)};
     }
 
     @Override
@@ -119,4 +88,8 @@ public class Button extends JButton implements MouseListener {
         repaint();
     }
 
+
+    public float getAlpha() {
+        return 1f;
+    }
 }

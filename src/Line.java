@@ -1,30 +1,19 @@
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.util.HashMap;
+import java.awt.geom.Point2D;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Line extends Element {
+    public static final int MAX_LENGTH = 99999;
     private final Node startNode;
     private Node endNode;
     private int cursorX, cursorY;
     private int length;
-    private Color darkLineColor = Color.WHITE;
-    private Color lightLineColor = Color.BLACK;
-    private static final HashMap<Color, Color> darkColorMap = new HashMap<>();
-    private static final HashMap<Color, Color> lightColorMap = new HashMap<>();
-
-    static {
-        darkColorMap.put(Color.WHITE, Color.GREEN);
-        darkColorMap.put(Color.GREEN, Color.RED);
-        darkColorMap.put(Color.RED, new Color(0, 0, 0, 0));
-        darkColorMap.put(new Color(0, 0, 0, 0), Color.WHITE);
-
-        lightColorMap.put(Color.BLACK, Color.GREEN.darker());
-        lightColorMap.put(Color.GREEN.darker(), Color.RED.darker());
-        lightColorMap.put(Color.RED.darker(), new Color(0, 0, 0, 0));
-        lightColorMap.put(new Color(0, 0, 0, 0), Color.BLACK);
-    }
 
 
     public void changeColor() {
@@ -37,6 +26,7 @@ public class Line extends Element {
         this.startNode = startNode;
         this.cursorX = startNode.getX();
         this.cursorY = startNode.getY();
+        this.length = 1;
     }
 
     public Node getStartNode() {
@@ -60,9 +50,14 @@ public class Line extends Element {
         return startNode.isTrustful() && endNode.isTrustful();
     }
 
-    public void setEndNodeAndLength(Node endNode, int length) {
+    public void setEndNode(Node endNode) {
         this.endNode = endNode;
-        this.elementName = startNode.elementName + "-" + endNode.elementName;
+        String[] namesOfNodes = new String[]{startNode.elementName, endNode.elementName};
+        Arrays.sort(namesOfNodes);
+        this.elementName = namesOfNodes[0] + "-" + namesOfNodes[1];
+    }
+
+    public void setLength(int length) {
         this.length = length;
     }
 
@@ -84,6 +79,18 @@ public class Line extends Element {
         }
     }
 
+    public Point2D.Float getMiddlePoint() {
+        int x = (this.startNode.getX() + this.endNode.getX()) / 2;
+        int y = (this.startNode.getY() + this.endNode.getY()) / 2;
+        return new Point2D.Float(x, y);
+    }
+
+    public double getAngleOfLine() {
+        float x1 = startNode.getX(), y1 = startNode.getY();
+        float x2 = endNode.getX(), y2 = endNode.getY();
+        return (Math.atan((y1 - y2) / (x1 - x2)));
+    }
+
     @Override
     public boolean containsPoint(int x, int y) {
         Ellipse2D currentPoint = new Ellipse2D.Double(x - 10 / 2.0, y - 10 / 2.0, 10, 10);
@@ -97,6 +104,12 @@ public class Line extends Element {
             newLine = new Line2D.Double(startNode.getX(), startNode.getY(), cursorX, cursorY);
         } else {
             newLine = new Line2D.Double(startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY());
+            if (MainPanel.getMetric() != Metric.HOPS) {
+                if (MainPanel.getMetric() == Metric.DISTANCE) {
+                    this.length = Node.calculateDistance(this.startNode, this.endNode);
+                }
+                drawLength(graphics2D);
+            }
         }
         if (this.hasStatus(ElementStatus.NONE)) {
             drawLine(graphics2D, newLine, Palette.getLineNoneColor(), 5, false);
@@ -112,6 +125,25 @@ public class Line extends Element {
         }
     }
 
+    private void drawLength(Graphics2D graphics2D) {
+        Font font = new Font("Arial", Font.BOLD, 20);
+        graphics2D.setFont(font);
+        String length = String.valueOf(this.length);
+        FontMetrics fontMetrics = graphics2D.getFontMetrics();
+        int dx = fontMetrics.stringWidth(length);
+        int dy = fontMetrics.getHeight();
+        Point2D.Float middlePoint = getMiddlePoint();
+        float stringX = (middlePoint.x - dx / 2f), stringY = (middlePoint.y - dy / 2f);
+        graphics2D.rotate(this.getAngleOfLine(), middlePoint.x, middlePoint.y);
+        graphics2D.setColor(Palette.getMainPanelBackground());
+        graphics2D.drawString(length, stringX + 2, stringY - 2);
+        graphics2D.drawString(length, stringX + 2, stringY + 2);
+        graphics2D.drawString(length, stringX - 2, stringY - 2);
+        graphics2D.drawString(length, stringX - 2, stringY + 2);
+        graphics2D.setColor(Palette.getFontColor());
+        graphics2D.drawString(length, stringX, stringY);
+        graphics2D.rotate(-this.getAngleOfLine(), middlePoint.x, middlePoint.y);
+    }
 
     private void drawLine(Graphics2D graphics2D, Line2D line, Color color, int strokeWith, boolean isSeparated) {
         graphics2D.setColor(color);
