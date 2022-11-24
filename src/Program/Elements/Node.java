@@ -17,8 +17,6 @@ public class Node extends Element {
     private boolean trustFactor;
     private static final int SIZE_OF_NODE = 60;
     private final String ipAddress;
-
-
     private final ArrayList<Line> lines = new ArrayList<>();
 
     public Node(int id, int x, int y) {
@@ -55,6 +53,10 @@ public class Node extends Element {
         return y;
     }
 
+    public Point getPoint() {
+        return new Point(x, y);
+    }
+
     public static int getSizeOfNode() {
         return SIZE_OF_NODE;
     }
@@ -63,6 +65,9 @@ public class Node extends Element {
         return trustFactor;
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
 
     public void changeTrustFactor() {
         this.trustFactor = !this.trustFactor;
@@ -119,10 +124,10 @@ public class Node extends Element {
         graphics2D.setStroke(new BasicStroke(3));
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));
-        graphics2D.drawString(this.elementName, circleX + 3, circleY - 3);
-        graphics2D.drawString(this.elementName, circleX + 3, circleY + 3);
-        graphics2D.drawString(this.elementName, circleX - 3, circleY - 3);
-        graphics2D.drawString(this.elementName, circleX - 3, circleY + 3);
+        FontMetrics fontMetrics = graphics2D.getFontMetrics();
+        int dx = fontMetrics.stringWidth(this.elementName);
+        int dy = fontMetrics.getHeight();
+        graphics2D.fillRect(circleX, (int) (circleY - dy/1.5f), dx, (int) (dy/1.3f));
         graphics2D.setColor(Palette.getFontColor());
         graphics2D.drawString(this.elementName, circleX, circleY);
     }

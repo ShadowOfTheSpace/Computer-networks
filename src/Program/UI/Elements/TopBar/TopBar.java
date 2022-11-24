@@ -3,38 +3,32 @@ package Program.UI.Elements.TopBar;
 import Program.UI.Elements.Borders.RoundedCornerBorderForTopBar;
 import Program.UI.Elements.Buttons.BarButton;
 import Program.UI.Elements.Buttons.Button;
-import Program.UI.Windows.InfoWindows.LineInfoWindow;
 import Program.UI.Colors.Palette;
-import Program.UI.Windows.MainWindow.Window;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class TopBar extends JPanel {
-    private final int barWidth;
-    private final int barHeight = 20;
     private final Button exitButton;
     private final Button minimizeButton;
-    private String title;
+    private final String title;
     private float alpha = 1;
 
-    public TopBar(int barWidth, String title) {
+    public TopBar(int barWidth, int barHeight, String title) {
         this.title = title;
-        this.barWidth = barWidth;
         this.setBorder(new RoundedCornerBorderForTopBar());
         this.setPreferredSize(new Dimension(barWidth, barHeight));
-        exitButton = new BarButton("×",true){
+        exitButton = new BarButton("×", true) {
             @Override
             public float getAlpha() {
                 return alpha;
             }
         };
         exitButton.addActionListener(e -> {
-            Window.getLineInfoWindows().remove((LineInfoWindow) (SwingUtilities.getWindowAncestor(this)));
+//            Window.getLineInfoWindows().remove((LineInfoWindow) (SwingUtilities.getWindowAncestor(this)));
             SwingUtilities.getWindowAncestor(this).dispose();
         });
-        minimizeButton = new BarButton("-", false){
-
+        minimizeButton = new BarButton("-", false) {
             @Override
             public float getAlpha() {
                 return alpha;
@@ -42,8 +36,8 @@ public class TopBar extends JPanel {
         };
         minimizeButton.addActionListener(e -> ((JFrame) SwingUtilities.getWindowAncestor(this)).setState(JFrame.ICONIFIED));
 
-        exitButton.setBounds(barWidth - (2 * barHeight) - 3, 2, 2 * barHeight, 2 * barHeight - 10);
-        minimizeButton.setBounds(barWidth - 4 * barHeight - 3, 2, 2 * barHeight, 2 * barHeight - 10);
+        exitButton.setBounds(barWidth - barHeight + 2, 2, barHeight, barHeight - 4);
+        minimizeButton.setBounds(barWidth - 2 * barHeight + 2, 2, barHeight, barHeight - 4);
         this.setLayout(null);
         this.add(exitButton);
         this.add(minimizeButton);
@@ -60,7 +54,7 @@ public class TopBar extends JPanel {
         graphics2D.setColor(Palette.getFontColor());
         FontMetrics fm = getFontMetrics(getFont());
         int textY = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
-        graphics2D.drawString(title, 15, textY);
+        graphics2D.drawString(title, 10, textY + 2);
     }
 
     public void changeTheme() {

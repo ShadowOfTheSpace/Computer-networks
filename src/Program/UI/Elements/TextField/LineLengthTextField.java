@@ -9,8 +9,8 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class TextField extends JTextField {
-    public TextField(String text, Metric metric) {
+public class LineLengthTextField extends JTextField {
+    public LineLengthTextField(String text, Metric metric) {
         super(text);
         if (metric == Metric.HOPS || metric == Metric.DISTANCE) {
             this.setEditable(false);

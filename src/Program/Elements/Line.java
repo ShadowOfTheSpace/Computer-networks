@@ -19,11 +19,6 @@ public class Line extends Element {
     private int length;
 
 
-    public void changeColor() {
-//        darkLineColor = darkColorMap.get(darkLineColor);
-//        lightLineColor = lightColorMap.get(lightLineColor);
-    }
-
     public Line(int id, Node startNode) {
         super(id, "", ElementStatus.DRAWING_LINE);
         this.startNode = startNode;
@@ -82,10 +77,10 @@ public class Line extends Element {
         }
     }
 
-    public Point2D.Float getMiddlePoint() {
+    public Point getMiddlePoint() {
         int x = (this.startNode.getX() + this.endNode.getX()) / 2;
         int y = (this.startNode.getY() + this.endNode.getY()) / 2;
-        return new Point2D.Float(x, y);
+        return new Point(x, y);
     }
 
     public double getAngleOfLine() {
@@ -135,15 +130,16 @@ public class Line extends Element {
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
         int dx = fontMetrics.stringWidth(length);
         int dy = fontMetrics.getHeight();
-        Point2D.Float middlePoint = getMiddlePoint();
+        Point middlePoint = getMiddlePoint();
         float stringX = (middlePoint.x - dx / 2f), stringY = (middlePoint.y - dy / 2f);
         graphics2D.rotate(this.getAngleOfLine(), middlePoint.x, middlePoint.y);
         graphics2D.setColor(Palette.getMainPanelBackground());
-        graphics2D.drawString(length, stringX + 2, stringY - 2);
-        graphics2D.drawString(length, stringX + 2, stringY + 2);
-        graphics2D.drawString(length, stringX - 2, stringY - 2);
-        graphics2D.drawString(length, stringX - 2, stringY + 2);
-        graphics2D.setColor(Palette.getFontColor());
+        graphics2D.fillRect((int) stringX, (int) (stringY - dy / 1.5f), dx, (int) (dy / 1.3f));
+        if (this.hasStatus(ElementStatus.NOT_PART_OF_TREE)) {
+            graphics2D.setColor(Palette.LINE_COLOR_NOT_PART_OF_TREE);
+        } else {
+            graphics2D.setColor(Palette.getFontColor());
+        }
         graphics2D.drawString(length, stringX, stringY);
         graphics2D.rotate(-this.getAngleOfLine(), middlePoint.x, middlePoint.y);
     }

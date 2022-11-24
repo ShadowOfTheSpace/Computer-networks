@@ -8,7 +8,8 @@ import Program.UI.Elements.ComboBox.CustomComboBox;
 import Program.UI.Elements.Label.MenuPanelLabel;
 import Program.UI.Elements.Panels.SubMenuPanel;
 import Program.UI.Icons.ImagesAndIcons;
-import Program.UI.Windows.InfoWindows.LineInfoWindow;
+import Program.UI.Windows.InfoWindows.LineInformationWindow;
+import Program.UI.Windows.InfoWindows.NodeInfoWindow;
 import Program.UI.Windows.Panels.MainPanel;
 import Program.UI.Windows.Panels.MenuPanel;
 import Program.UI.Elements.Buttons.Button;
@@ -26,7 +27,8 @@ public class Window extends JFrame {
     private static CustomComboBox metricChooser;
     private static MenuPanel menuPanel;
     private static MainPanel mainPanel;
-    private static final ArrayList<LineInfoWindow> lineInfoWindows = new ArrayList<>();
+    private static final ArrayList<LineInformationWindow> lineInfoWindows = new ArrayList<>();
+    private static final ArrayList<NodeInfoWindow> nodeInfoWindows = new ArrayList<>();
 
     public Window() {
         this.setTitle("Modified Dijkstra`s algorithm by Tkachuk Oleksandr");
@@ -71,7 +73,7 @@ public class Window extends JFrame {
 
         SubMenuPanel metricPanel = new SubMenuPanel(new GridBagLayout());
         SubMenuPanel modePanel = new SubMenuPanel(new GridBagLayout());
-        SubMenuPanel switchPanel = new SubMenuPanel();
+        SubMenuPanel switchPanel = new SubMenuPanel(false);
 
         menuPanel.add(metricPanel, getGbc(0, 0, 2, 1, 1, 0.35));
         menuPanel.add(modePanel, getGbc(0, 2, 3, 1, 1, 0.25));
@@ -136,7 +138,8 @@ public class Window extends JFrame {
                 Window.darkModeEnabled = !Window.darkModeEnabled;
                 Window.menuPanel.changeTheme();
                 Window.mainPanel.paintImmediately(0, 0, Window.mainPanel.getWidth(), Window.mainPanel.getHeight());
-                Window.lineInfoWindows.forEach(LineInfoWindow::changeTheme);
+                Window.lineInfoWindows.forEach(LineInformationWindow::changeTheme);
+                Window.nodeInfoWindows.forEach(NodeInfoWindow::changeTheme);
             }
         });
 
@@ -147,15 +150,15 @@ public class Window extends JFrame {
 
 
         SubMenuPanel metricLabelPanel = new SubMenuPanel(new GridLayout());
-        SubMenuPanel metricChooserPanel = new SubMenuPanel();
+        SubMenuPanel metricChooserPanel = new SubMenuPanel(false);
 
-        metricPanel.add(new SubMenuPanel(), getGbc(0, 0, 1, 1, 1, 0.3));
+        metricPanel.add(new SubMenuPanel(false), getGbc(0, 0, 1, 1, 1, 0.3));
         metricPanel.add(metricLabelPanel, getGbc(0, 1, 1, 1, 1, 0.2));
         metricPanel.add(metricChooserPanel, getGbc(0, 2, 2, 1, 1, 0.6));
 
 
         SubMenuPanel modeLabelPanel = new SubMenuPanel(new GridLayout());
-        SubMenuPanel modeChooserPanel = new SubMenuPanel();
+        SubMenuPanel modeChooserPanel = new SubMenuPanel(false);
         modePanel.add(modeLabelPanel, getGbc(0, 0, 1, 1, 1, 0.2));
         modePanel.add(modeChooserPanel, getGbc(0, 1, 2, 1, 1, 0.8));
 
@@ -210,8 +213,12 @@ public class Window extends JFrame {
         return mainPanel;
     }
 
-    public static ArrayList<LineInfoWindow> getLineInfoWindows() {
+    public static ArrayList<LineInformationWindow> getLineInfoWindows() {
         return lineInfoWindows;
+    }
+
+    public static ArrayList<NodeInfoWindow> getNodeInfoWindows() {
+        return nodeInfoWindows;
     }
 
     public static void changeFullscreen(){

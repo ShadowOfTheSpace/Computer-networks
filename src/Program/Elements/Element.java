@@ -19,10 +19,6 @@ public abstract class Element implements Drawable {
         return elementName;
     }
 
-    public ElementStatus getElementStatus() {
-        return elementStatus;
-    }
-
     public void changeActiveStatus(){
         if(this.hasStatus(ElementStatus.ACTIVE)){
             this.elementStatus = ElementStatus.NONE;

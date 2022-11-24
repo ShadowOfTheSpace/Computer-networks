@@ -2,15 +2,13 @@ package Program.UI.Windows.Panels;
 
 import Program.Algorithm.Path;
 import Program.Algorithm.Tree;
-import Program.Elements.Element;
-import Program.Elements.ElementStatus;
-import Program.Elements.Line;
-import Program.Elements.Node;
+import Program.Elements.*;
 import Program.Modes.Metric;
 import Program.Modes.Mode;
 import Program.UI.Colors.Palette;
 import Program.UI.Icons.ImagesAndIcons;
-import Program.UI.Windows.InfoWindows.LineInfoWindow;
+import Program.UI.Windows.InfoWindows.LineInformationWindow;
+import Program.UI.Windows.InfoWindows.NodeInfoWindow;
 import Program.UI.Windows.MainWindow.Window;
 
 import javax.swing.*;
@@ -199,9 +197,9 @@ public class MainPanel extends JPanel {
                     Node currentNode = getNodeOrNullByPoint(x, y);
                     Line currentLine = getLineOrNullByPoint(x, y);
                     if (currentNode != null) {
-
+                        Window.getNodeInfoWindows().add(new NodeInfoWindow(currentNode, new RoutingTable(currentNode, nodes, metric)));
                     } else if (currentLine != null) {
-                        Window.getLineInfoWindows().add(new LineInfoWindow(currentLine, metric));
+                        Window.getLineInfoWindows().add(new LineInformationWindow(currentLine));
                     }
                 }
                 repaint();
@@ -253,9 +251,6 @@ public class MainPanel extends JPanel {
                         } else if (mode == Mode.FINDING_TREE) {
                             drawTree();
                         }
-                    } else if (getLineOrNullByPoint(x, y) != null) {
-                        Line currentLine = getLineOrNullByPoint(x, y);
-                        currentLine.changeColor();
                     }
                 }
                 repaint();
@@ -441,7 +436,7 @@ public class MainPanel extends JPanel {
 
     private int getLengthOfLine(Line line) {
         if (metric == Metric.CONGESTION) {
-            Window.getLineInfoWindows().add(new LineInfoWindow(line, metric));
+            Window.getLineInfoWindows().add(new LineInformationWindow(line));
         } else if (metric == Metric.DISTANCE) {
             return Node.calculateDistance(line.getStartNode(), line.getEndNode());
         }
