@@ -1,6 +1,6 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_released;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.node.Node;
 import program.elements.node.Nodes;
@@ -23,8 +23,8 @@ public class MouseReleasedWithModeCreatingNodes extends MouseActionMode implemen
     public void execute() {
         Point cursorPoint = event.getPoint();
         Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
-        if (currentNode.exists() && currentNode.hasStatus(ElementStatus.MOVING_NODE)) {
-            currentNode.setElementStatus(ElementStatus.ACTIVE);
+        if (currentNode.exists() && currentNode.hasStatus(Status.MOVING_NODE)) {
+            currentNode.setElementStatus(Status.ACTIVE);
             Window.getMainPanel().setCursor(new Cursor(Cursor.HAND_CURSOR));
         }
     }

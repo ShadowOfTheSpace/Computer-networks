@@ -1,7 +1,7 @@
 package program.algorithm;
 
 import program.elements.element.Element;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.node.Node;
 
@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 
 public class Path {
     public static void showPath(Collection<Node> nodes, Collection<Line> lines, Node startNode, Node endNode) {
-        lines.forEach(line -> line.setElementStatus(ElementStatus.NONE));
+        lines.forEach(line -> line.setElementStatus(Status.NONE));
         if (!startNode.exists() || !endNode.exists()) {
             return;
         }
         List<Node> path = new ArrayList<>(getPath(nodes, startNode, endNode));
         for (int i = 1; i < path.size(); i++) {
             Line lineToShow = path.get(i - 1).getLineToOtherNode(path.get(i));
-            lineToShow.setElementStatus(ElementStatus.PART_OF_PATH);
+            lineToShow.setElementStatus(Status.PART_OF_PATH);
         }
     }
 

@@ -1,7 +1,7 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_pressed;
 
 import program.elements.element.Element;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.element.Elements;
 import program.elements.line.Line;
 import program.elements.line.Lines;
@@ -42,11 +42,11 @@ public class MousePressedWithModeCreatingLines extends MouseActionMode implement
                 return;
             }
             if (currentNode.exists()) {
-                currentNode.setElementStatus(ElementStatus.START_NODE);
+                currentNode.setElementStatus(Status.START_NODE);
                 lines.add(new Line(lines.size() + 1, currentNode));
-            } else if (currentLine.exists() && currentLine.hasStatus(ElementStatus.NONE)) {
+            } else if (currentLine.exists() && currentLine.hasStatus(Status.NONE)) {
                 if (!event.isControlDown()) {
-                    Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+                    Elements.setStatusForAllElements(Status.NONE, nodes, lines);
                 }
                 Elements.makeElementActive(currentLine);
             }

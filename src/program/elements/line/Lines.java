@@ -1,6 +1,6 @@
 package program.elements.line;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.node.Nodes;
 import program.modes.Metric;
 import program.ui.windows.information.LineInformationWindow;
@@ -20,16 +20,16 @@ public class Lines {
         return nonExistingLine;
     }
 
-    public static List<Line> getLinesByStatus(ElementStatus status, List<Line> lines) {
+    public static List<Line> getLinesByStatus(Status status, List<Line> lines) {
         return lines.stream()
                 .filter(line -> line.hasStatus(status))
                 .collect(Collectors.toList());
     }
 
 
-    public static Line getLineOrNullByStatus(ElementStatus elementStatus, List<Line> lines) {
+    public static Line getLineOrNullByStatus(Status status, List<Line> lines) {
         return lines.stream()
-                .filter(line -> line.hasStatus(elementStatus))
+                .filter(line -> line.hasStatus(status))
                 .findFirst()
                 .orElse(getNonExistingLine());
     }

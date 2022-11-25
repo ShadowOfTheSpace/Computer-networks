@@ -1,7 +1,7 @@
 package program.elements.node;
 
 import program.elements.element.Element;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.generators.ip_address.IPAddressGenerator;
 import program.ui.colors.Palette;
@@ -24,14 +24,14 @@ public class Node extends Element {
     private final ArrayList<Line> lines = new ArrayList<>();
 
     public Node(int id, int x, int y) {
-        super(id, NodeNameGenerator.generateName(id), ElementStatus.NONE);
+        super(id, NodeNameGenerator.generateName(id), Status.NONE);
         setCoordinates(x, y);
         this.trustFactor = true;
         this.ipAddress = IPAddressGenerator.generateIPAddress();
     }
 
     public Node() {
-        super(-1, "", ElementStatus.EMPTY_ELEMENT);
+        super(-1, "", Status.EMPTY_ELEMENT);
         this.trustFactor = false;
         this.ipAddress = "";
     }
@@ -129,7 +129,7 @@ public class Node extends Element {
     @Override
     public void draw(Graphics2D graphics2D) {
         int circleX = (int) this.getEllipse().getX(), circleY = (int) this.getEllipse().getY();
-        graphics2D.drawImage(ImagesAndIcons.getImage(Window.isDarkModeEnabled(), this.trustFactor, this.elementStatus), circleX, circleY, null);
+        graphics2D.drawImage(ImagesAndIcons.getImage(Window.isDarkModeEnabled(), this.trustFactor, this.status), circleX, circleY, null);
         graphics2D.setStroke(new BasicStroke(3));
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.setFont(new Font("Arial", Font.BOLD, 24));

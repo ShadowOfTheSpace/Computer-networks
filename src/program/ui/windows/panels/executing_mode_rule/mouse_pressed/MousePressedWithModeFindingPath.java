@@ -1,7 +1,7 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_pressed;
 
 import program.algorithm.Path;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.line.Lines;
 import program.elements.node.Node;
@@ -30,19 +30,19 @@ public class MousePressedWithModeFindingPath extends MouseActionMode implements 
         Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
         Line currentLine = Lines.getLineByPoint(cursorPoint, lines);
         if (SwingUtilities.isLeftMouseButton(event) && currentNode.exists()) {
-            Node startNode = Nodes.getNodeByStatus(ElementStatus.START_NODE, nodes);
-            Node endNode = Nodes.getNodeByStatus(ElementStatus.END_NODE, nodes);
+            Node startNode = Nodes.getNodeByStatus(Status.START_NODE, nodes);
+            Node endNode = Nodes.getNodeByStatus(Status.END_NODE, nodes);
             if (!startNode.exists() && !endNode.exists()) {
-                currentNode.setElementStatus(ElementStatus.START_NODE);
+                currentNode.setElementStatus(Status.START_NODE);
             } else if (startNode.exists() && !endNode.exists()) {
-                currentNode.setElementStatus(ElementStatus.END_NODE);
+                currentNode.setElementStatus(Status.END_NODE);
             } else if (!startNode.exists()) {
-                currentNode.setElementStatus(ElementStatus.START_NODE);
-            } else if (currentNode.hasStatus(ElementStatus.START_NODE) || currentNode.hasStatus(ElementStatus.END_NODE)) {
-                currentNode.setElementStatus(ElementStatus.NONE);
+                currentNode.setElementStatus(Status.START_NODE);
+            } else if (currentNode.hasStatus(Status.START_NODE) || currentNode.hasStatus(Status.END_NODE)) {
+                currentNode.setElementStatus(Status.NONE);
             }
-            startNode = Nodes.getNodeByStatus(ElementStatus.START_NODE, nodes);
-            endNode = Nodes.getNodeByStatus(ElementStatus.END_NODE, nodes);
+            startNode = Nodes.getNodeByStatus(Status.START_NODE, nodes);
+            endNode = Nodes.getNodeByStatus(Status.END_NODE, nodes);
             Path.showPath(nodes, lines, startNode, endNode);
         }else if (SwingUtilities.isRightMouseButton(event)) {
             if (currentNode.exists()) {

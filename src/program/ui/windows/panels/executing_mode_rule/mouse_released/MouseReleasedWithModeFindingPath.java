@@ -1,7 +1,7 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_released;
 
 import program.algorithm.Path;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.node.Node;
 import program.elements.node.Nodes;
@@ -27,8 +27,8 @@ public class MouseReleasedWithModeFindingPath extends MouseActionMode implements
             Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
             if (currentNode.exists()) {
                 currentNode.changeTrustFactor();
-                Node startNode = Nodes.getNodeByStatus(ElementStatus.START_NODE, nodes);
-                Node endNode = Nodes.getNodeByStatus(ElementStatus.END_NODE, nodes);
+                Node startNode = Nodes.getNodeByStatus(Status.START_NODE, nodes);
+                Node endNode = Nodes.getNodeByStatus(Status.END_NODE, nodes);
                 Path.showPath(nodes, lines, startNode, endNode);
             }
         }

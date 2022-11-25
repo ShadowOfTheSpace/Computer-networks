@@ -14,18 +14,18 @@ public class Elements {
 
     public static List<Element> getElementsWithNonNoneStatus(List<Node> nodes, List<Line> lines) {
         List<Element> elements = nodes.stream()
-                .filter(node -> !node.hasStatus(ElementStatus.NONE))
+                .filter(node -> !node.hasStatus(Status.NONE))
                 .collect(Collectors.toList());
         elements.addAll(lines.stream()
-                .filter(line -> !line.hasStatus(ElementStatus.NONE))
+                .filter(line -> !line.hasStatus(Status.NONE))
                 .collect(Collectors.toList()));
         return elements;
     }
 
 
-    public static void setStatusForAllElements(ElementStatus elementStatus, List<Node> nodes, List<Line> lines) {
-        nodes.forEach(node -> node.setElementStatus(elementStatus));
-        lines.forEach(line -> line.setElementStatus(elementStatus));
+    public static void setStatusForAllElements(Status status, List<Node> nodes, List<Line> lines) {
+        nodes.forEach(node -> node.setElementStatus(status));
+        lines.forEach(line -> line.setElementStatus(status));
     }
 
 
@@ -39,7 +39,7 @@ public class Elements {
     }
 
     public static void makeElementActive(Element element) {
-        element.setElementStatus(ElementStatus.ACTIVE);
+        element.setElementStatus(Status.ACTIVE);
     }
 
     private static void deleteLine(Line lineToDelete, List<Line> lines) {
@@ -48,8 +48,8 @@ public class Elements {
     }
 
     public static void deleteElements(List<Node> nodes, List<Line> lines) {
-        List<Node> nodesToDelete = Nodes.getNodesByStatus(ElementStatus.ACTIVE, nodes);
-        List<Line> linesToDelete = Lines.getLinesByStatus(ElementStatus.ACTIVE, lines);
+        List<Node> nodesToDelete = Nodes.getNodesByStatus(Status.ACTIVE, nodes);
+        List<Line> linesToDelete = Lines.getLinesByStatus(Status.ACTIVE, lines);
         if (!nodesToDelete.isEmpty() || !linesToDelete.isEmpty()) {
             nodesToDelete.forEach(node -> node.getLines().forEach(line -> deleteLine(line, lines)));
             nodes.removeAll(nodesToDelete);

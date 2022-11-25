@@ -7,12 +7,12 @@ import java.awt.*;
 public abstract class Element implements Drawable {
     protected final int id;
     protected String elementName;
-    protected ElementStatus elementStatus;
+    protected Status status;
 
-    public Element(int id, String elementName, ElementStatus elementStatus) {
+    public Element(int id, String elementName, Status status) {
         this.id = id;
         this.elementName = elementName;
-        this.elementStatus = elementStatus;
+        this.status = status;
     }
 
     public int getId() {
@@ -24,25 +24,25 @@ public abstract class Element implements Drawable {
     }
 
     public void changeActiveStatus() {
-        if (this.hasStatus(ElementStatus.ACTIVE)) {
-            this.elementStatus = ElementStatus.NONE;
+        if (this.hasStatus(Status.ACTIVE)) {
+            this.status = Status.NONE;
         } else {
-            this.elementStatus = ElementStatus.ACTIVE;
+            this.status = Status.ACTIVE;
         }
     }
 
     public abstract boolean containsPoint(Point point);
 
-    public void setElementStatus(ElementStatus elementStatus) {
-        this.elementStatus = elementStatus;
+    public void setElementStatus(Status status) {
+        this.status = status;
     }
 
-    public boolean hasStatus(ElementStatus elementStatus) {
-        return this.elementStatus == elementStatus;
+    public boolean hasStatus(Status status) {
+        return this.status == status;
     }
 
     public boolean exists() {
-        return this.elementStatus != ElementStatus.EMPTY_ELEMENT;
+        return this.status != Status.EMPTY_ELEMENT;
     }
 
     @Override

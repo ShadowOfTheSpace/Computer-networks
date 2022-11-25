@@ -1,7 +1,7 @@
 package program.elements.line;
 
 import program.elements.element.Element;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.node.Node;
 import program.elements.node.Nodes;
 import program.modes.Metric;
@@ -23,7 +23,7 @@ public class Line extends Element {
 
 
     public Line(int id, Node startNode) {
-        super(id, "", ElementStatus.DRAWING_LINE);
+        super(id, "", Status.DRAWING_LINE);
         this.startNode = startNode;
         this.cursorX = startNode.getX();
         this.cursorY = startNode.getY();
@@ -31,7 +31,7 @@ public class Line extends Element {
     }
 
     public Line() {
-        super(-1, "", ElementStatus.EMPTY_ELEMENT);
+        super(-1, "", Status.EMPTY_ELEMENT);
         this.startNode = Nodes.getNonExistingNode();
     }
 
@@ -117,14 +117,14 @@ public class Line extends Element {
                 drawLength(graphics2D);
             }
         }
-        if (this.hasStatus(ElementStatus.NONE)) {
+        if (this.hasStatus(Status.NONE)) {
             drawLine(graphics2D, newLine, Palette.getLineNoneColor(), 5, false);
-        } else if (this.hasStatus(ElementStatus.ACTIVE)) {
+        } else if (this.hasStatus(Status.ACTIVE)) {
             drawLine(graphics2D, newLine, Palette.LINE_COLOR_ACTIVE, 11, false);
             drawLine(graphics2D, newLine, Palette.getLineNoneColor(), 5, false);
-        } else if (this.hasStatus(ElementStatus.PART_OF_PATH)) {
+        } else if (this.hasStatus(Status.PART_OF_PATH)) {
             drawLine(graphics2D, newLine, Palette.getLineColorWithTrustFactor(this.isTrustful()), 5, false);
-        } else if (this.hasStatus(ElementStatus.NOT_PART_OF_TREE)) {
+        } else if (this.hasStatus(Status.NOT_PART_OF_TREE)) {
             drawLine(graphics2D, newLine, Palette.LINE_COLOR_NOT_PART_OF_TREE, 5, false);
         } else {
             drawLine(graphics2D, newLine, Palette.getLineNoneColor(), 5, true);
@@ -143,7 +143,7 @@ public class Line extends Element {
         graphics2D.rotate(this.getAngleOfLine(), middlePoint.x, middlePoint.y);
         graphics2D.setColor(Palette.getMainPanelBackground());
         graphics2D.fillRect((int) stringX, (int) (stringY - dy / 1.5f), dx, (int) (dy / 1.3f));
-        if (this.hasStatus(ElementStatus.NOT_PART_OF_TREE)) {
+        if (this.hasStatus(Status.NOT_PART_OF_TREE)) {
             graphics2D.setColor(Palette.LINE_COLOR_NOT_PART_OF_TREE);
         } else {
             graphics2D.setColor(Palette.getFontColor());

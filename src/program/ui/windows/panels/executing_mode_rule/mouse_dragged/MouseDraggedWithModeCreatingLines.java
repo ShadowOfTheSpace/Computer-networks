@@ -1,6 +1,6 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_dragged;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.line.Lines;
 import program.elements.node.Node;
@@ -24,16 +24,16 @@ public class MouseDraggedWithModeCreatingLines extends MouseActionMode implement
     public void execute() {
         if(SwingUtilities.isLeftMouseButton(event)&&!event.isControlDown()){
             Point cursorPoint = event.getPoint();
-            Line currentLine = Lines.getLineOrNullByStatus(ElementStatus.DRAWING_LINE, lines);
+            Line currentLine = Lines.getLineOrNullByStatus(Status.DRAWING_LINE, lines);
             if (currentLine.exists()) {
                 currentLine.setCursorPoint(cursorPoint);
                 Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
-                if (currentNode.exists() && !currentNode.hasStatus(ElementStatus.START_NODE)) {
-                    currentNode.setElementStatus(ElementStatus.END_NODE);
+                if (currentNode.exists() && !currentNode.hasStatus(Status.START_NODE)) {
+                    currentNode.setElementStatus(Status.END_NODE);
                 } else {
-                    currentNode = Nodes.getNodeByStatus(ElementStatus.END_NODE, nodes);
+                    currentNode = Nodes.getNodeByStatus(Status.END_NODE, nodes);
                     if (currentNode.exists()) {
-                        currentNode.setElementStatus(ElementStatus.NONE);
+                        currentNode.setElementStatus(Status.NONE);
                     }
                 }
             }

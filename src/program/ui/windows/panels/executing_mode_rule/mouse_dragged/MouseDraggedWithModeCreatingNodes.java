@@ -1,6 +1,6 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_dragged;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.node.Node;
 import program.elements.node.Nodes;
@@ -26,10 +26,10 @@ public class MouseDraggedWithModeCreatingNodes extends MouseActionMode implement
             Point cursorPoint = event.getPoint();
             Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
             if (!currentNode.exists()) {
-                currentNode = Nodes.getNodeByStatus(ElementStatus.MOVING_NODE, nodes);
+                currentNode = Nodes.getNodeByStatus(Status.MOVING_NODE, nodes);
             }
-            if (currentNode.exists() && !currentNode.hasStatus(ElementStatus.NONE)) {
-                currentNode.setElementStatus(ElementStatus.MOVING_NODE);
+            if (currentNode.exists() && !currentNode.hasStatus(Status.NONE)) {
+                currentNode.setElementStatus(Status.MOVING_NODE);
                 int oldX = currentNode.getX(), oldY = currentNode.getY();
                 currentNode.setCoordinates(cursorPoint);
                 if (Nodes.hasIntersection(currentNode, nodes)) {

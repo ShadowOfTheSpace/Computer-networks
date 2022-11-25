@@ -1,6 +1,6 @@
 package program.ui.windows.panels.executing_mode_rule.key_action;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.element.Elements;
 import program.elements.line.Line;
 import program.elements.node.Node;
@@ -41,7 +41,7 @@ public class KeyPressed {
     private class KeyEscapePressed implements Executable {
         @Override
         public void execute() {
-            Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+            Elements.setStatusForAllElements(Status.NONE, nodes, lines);
         }
     }
 
@@ -68,7 +68,7 @@ public class KeyPressed {
         @Override
         public void execute() {
             if (event.isControlDown()) {
-                Elements.setStatusForAllElements(ElementStatus.ACTIVE, nodes, lines);
+                Elements.setStatusForAllElements(Status.ACTIVE, nodes, lines);
             }
         }
     }

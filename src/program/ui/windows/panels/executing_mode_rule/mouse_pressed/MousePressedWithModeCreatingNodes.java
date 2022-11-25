@@ -1,7 +1,7 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_pressed;
 
 import program.elements.element.Element;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.element.Elements;
 import program.elements.line.Line;
 import program.elements.line.Lines;
@@ -30,7 +30,7 @@ public class MousePressedWithModeCreatingNodes extends MouseActionMode implement
     public void execute() {
         Point cursorPoint = event.getPoint();
         Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
-        Node activeNode = Nodes.getNodeByStatus(ElementStatus.ACTIVE, nodes);
+        Node activeNode = Nodes.getNodeByStatus(Status.ACTIVE, nodes);
         Line currentLine = Lines.getLineByPoint(cursorPoint, lines);
         if (SwingUtilities.isLeftMouseButton(event)) {
             if (event.isControlDown()) {
@@ -46,15 +46,15 @@ public class MousePressedWithModeCreatingNodes extends MouseActionMode implement
                     nodes.add(newNode);
                     MainPanel.incrementNumberOfCreatedNodes();
                 } else {
-                    if (currentNode.exists() && currentNode.hasStatus(ElementStatus.NONE)) {
+                    if (currentNode.exists() && currentNode.hasStatus(Status.NONE)) {
                         if (!event.isControlDown()) {
-                            Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+                            Elements.setStatusForAllElements(Status.NONE, nodes, lines);
                         }
                         Elements.makeElementActive(currentNode);
                     }
                 }
             } else {
-                Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+                Elements.setStatusForAllElements(Status.NONE, nodes, lines);
             }
         } else if (SwingUtilities.isRightMouseButton(event)) {
             if (currentNode.exists()) {

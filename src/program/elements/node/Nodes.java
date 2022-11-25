@@ -1,6 +1,6 @@
 package program.elements.node;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 
 import java.awt.*;
 import java.util.List;
@@ -23,14 +23,14 @@ public class Nodes {
                 .orElse(Nodes.getNonExistingNode());
     }
 
-    public static Node getNodeByStatus(ElementStatus status, List<Node> nodes) {
+    public static Node getNodeByStatus(Status status, List<Node> nodes) {
         return nodes.stream()
                 .filter(node -> node.hasStatus(status))
                 .findFirst()
                 .orElse(Nodes.getNonExistingNode());
     }
 
-    public static List<Node> getNodesByStatus(ElementStatus status, List<Node> nodes) {
+    public static List<Node> getNodesByStatus(Status status, List<Node> nodes) {
         return nodes.stream()
                 .filter(node -> node.hasStatus(status))
                 .collect(Collectors.toList());

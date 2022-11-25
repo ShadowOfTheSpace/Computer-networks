@@ -1,7 +1,7 @@
 package program.algorithm;
 
 import program.elements.element.Element;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.node.Node;
 import program.modes.Metric;
@@ -12,19 +12,19 @@ import java.util.stream.Collectors;
 
 public class Tree {
     public static void showTree(Collection<Node> nodes, Collection<Line> lines, Node startNode) {
-        lines.forEach(line -> line.setElementStatus(ElementStatus.NONE));
+        lines.forEach(line -> line.setElementStatus(Status.NONE));
         if (!startNode.exists()) {
             return;
         }
         List<Node> endNodes = new ArrayList<>(nodes);
         endNodes.remove(startNode);
-        lines.forEach(line -> line.setElementStatus(ElementStatus.NOT_PART_OF_TREE));
+        lines.forEach(line -> line.setElementStatus(Status.NOT_PART_OF_TREE));
         HashMap<Node, Node> nextPrevNodeMap = DijkstraAlgorithm.dijkstraAlgorithm(nodes, startNode);
         for (Node endNode : endNodes) {
             ArrayList<Node> currentPath = new ArrayList<>(Path.unpackTable(nextPrevNodeMap, startNode, endNode));
             for (int i = 1; i < currentPath.size(); i++) {
                 Line lineToShow = currentPath.get(i - 1).getLineToOtherNode(currentPath.get(i));
-                lineToShow.setElementStatus(ElementStatus.PART_OF_PATH);
+                lineToShow.setElementStatus(Status.PART_OF_PATH);
             }
         }
     }

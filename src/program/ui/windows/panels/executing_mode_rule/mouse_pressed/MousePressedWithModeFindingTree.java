@@ -1,7 +1,7 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_pressed;
 
 import program.algorithm.Tree;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.element.Elements;
 import program.elements.line.Line;
 import program.elements.line.Lines;
@@ -31,16 +31,16 @@ public class MousePressedWithModeFindingTree extends MouseActionMode implements 
         Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
         Line currentLine = Lines.getLineByPoint(cursorPoint, lines);
         if (SwingUtilities.isLeftMouseButton(event) && currentNode.exists()) {
-            if (currentNode.hasStatus(ElementStatus.START_NODE)) {
-                Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+            if (currentNode.hasStatus(Status.START_NODE)) {
+                Elements.setStatusForAllElements(Status.NONE, nodes, lines);
             } else {
-                Node oldStartNode = Nodes.getNodeByStatus(ElementStatus.START_NODE, nodes);
+                Node oldStartNode = Nodes.getNodeByStatus(Status.START_NODE, nodes);
                 if (oldStartNode.exists()) {
-                    oldStartNode.setElementStatus(ElementStatus.NONE);
+                    oldStartNode.setElementStatus(Status.NONE);
                 }
-                currentNode.setElementStatus(ElementStatus.START_NODE);
+                currentNode.setElementStatus(Status.START_NODE);
             }
-            Node startNode = Nodes.getNodeByStatus(ElementStatus.START_NODE, nodes);
+            Node startNode = Nodes.getNodeByStatus(Status.START_NODE, nodes);
             Tree.showTree(nodes, lines, startNode);
         } else if (SwingUtilities.isRightMouseButton(event)) {
             if (currentNode.exists()) {

@@ -1,6 +1,6 @@
 package program.ui.windows.panels;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.element.Elements;
 import program.elements.line.Line;
 import program.elements.node.Node;
@@ -129,7 +129,7 @@ public class MainPanel extends JPanel {
             lines.clear();
             numberOfCreatedNodes = 0;
         } else {
-            Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+            Elements.setStatusForAllElements(Status.NONE, nodes, lines);
         }
         repaint();
     }
@@ -152,12 +152,12 @@ public class MainPanel extends JPanel {
 
     public void setMode(Mode mode) {
         MainPanel.mode = mode;
-        Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+        Elements.setStatusForAllElements(Status.NONE, nodes, lines);
     }
 
     public void setMetric(Metric metric) {
         MainPanel.metric = metric;
-        Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+        Elements.setStatusForAllElements(Status.NONE, nodes, lines);
         reset();
     }
 

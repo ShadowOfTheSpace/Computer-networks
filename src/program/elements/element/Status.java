@@ -1,6 +1,6 @@
 package program.elements.element;
 
-public enum ElementStatus {
+public enum Status {
     NONE,
     ACTIVE,
     MOVING_NODE,

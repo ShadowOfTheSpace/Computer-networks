@@ -1,6 +1,6 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_released;
 
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.element.Elements;
 import program.elements.line.Line;
 import program.elements.line.Lines;
@@ -25,12 +25,12 @@ public class MouseReleasedWithModeCreatingLines extends MouseActionMode implemen
     public void execute() {
         Point cursorPoint = event.getPoint();
         Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
-        Line currentLine = Lines.getLineOrNullByStatus(ElementStatus.DRAWING_LINE, lines);
+        Line currentLine = Lines.getLineOrNullByStatus(Status.DRAWING_LINE, lines);
         if (currentNode.exists()) {
             if (currentLine.exists()) {
                 if (!currentLine.getStartNode().equals(currentNode)) {
                     currentLine.setEndNode(currentNode);
-                    currentLine.setElementStatus(ElementStatus.NONE);
+                    currentLine.setElementStatus(Status.NONE);
                     if (!currentNode.addLine(currentLine) || !currentLine.getStartNode().addLine(currentLine)) {
                         lines.removeIf(line -> line.getId() == currentLine.getId());
                     } else {
@@ -38,15 +38,15 @@ public class MouseReleasedWithModeCreatingLines extends MouseActionMode implemen
                     }
                 } else {
                     lines.remove(currentLine);
-                    currentNode.setElementStatus(ElementStatus.NONE);
+                    currentNode.setElementStatus(Status.NONE);
                 }
             }
         } else {
-            lines.removeIf(line -> line.hasStatus(ElementStatus.DRAWING_LINE));
+            lines.removeIf(line -> line.hasStatus(Status.DRAWING_LINE));
             Window.getMainPanel().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
         if ((!Lines.getLineByPoint(cursorPoint, lines).exists() || currentNode.exists()) && !event.isControlDown()) {
-            Elements.setStatusForAllElements(ElementStatus.NONE, nodes, lines);
+            Elements.setStatusForAllElements(Status.NONE, nodes, lines);
         }
     }
 }

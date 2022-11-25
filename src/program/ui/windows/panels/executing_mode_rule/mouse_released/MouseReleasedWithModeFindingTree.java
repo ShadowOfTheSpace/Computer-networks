@@ -1,7 +1,7 @@
 package program.ui.windows.panels.executing_mode_rule.mouse_released;
 
 import program.algorithm.Tree;
-import program.elements.element.ElementStatus;
+import program.elements.element.Status;
 import program.elements.line.Line;
 import program.elements.node.Node;
 import program.elements.node.Nodes;
@@ -27,7 +27,7 @@ public class MouseReleasedWithModeFindingTree  extends MouseActionMode implement
             Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
             if (currentNode.exists()) {
                 currentNode.changeTrustFactor();
-                Node startNode = Nodes.getNodeByStatus(ElementStatus.START_NODE, nodes);
+                Node startNode = Nodes.getNodeByStatus(Status.START_NODE, nodes);
                 Tree.showTree(nodes, lines, startNode);
             }
         }
