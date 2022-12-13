@@ -48,7 +48,7 @@ public class KeyPressed {
     private class KeyEnterPressed implements Executable {
         @Override
         public void execute() {
-            if (event.isControlDown()) {
+            if (event.isAltDown()) {
                 SwingUtilities.getWindowAncestor(Window.getMainPanel()).dispose();
                 Window.changeFullscreen();
                 ((JFrame) SwingUtilities.getWindowAncestor(Window.getMainPanel())).setUndecorated(Window.isFullScreenEnabled());

@@ -25,7 +25,7 @@ public class MouseReleasedWithModeCreatingLines extends MouseActionMode implemen
     public void execute() {
         Point cursorPoint = event.getPoint();
         Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);
-        Line currentLine = Lines.getLineOrNullByStatus(Status.DRAWING_LINE, lines);
+        Line currentLine = Lines.getLineByStatus(Status.DRAWING_LINE, lines);
         if (currentNode.exists()) {
             if (currentLine.exists()) {
                 if (!currentLine.getStartNode().equals(currentNode)) {

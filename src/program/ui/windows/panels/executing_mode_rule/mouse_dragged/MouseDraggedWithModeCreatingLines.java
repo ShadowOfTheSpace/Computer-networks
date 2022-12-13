@@ -24,7 +24,7 @@ public class MouseDraggedWithModeCreatingLines extends MouseActionMode implement
     public void execute() {
         if(SwingUtilities.isLeftMouseButton(event)&&!event.isControlDown()){
             Point cursorPoint = event.getPoint();
-            Line currentLine = Lines.getLineOrNullByStatus(Status.DRAWING_LINE, lines);
+            Line currentLine = Lines.getLineByStatus(Status.DRAWING_LINE, lines);
             if (currentLine.exists()) {
                 currentLine.setCursorPoint(cursorPoint);
                 Node currentNode = Nodes.getNodeByPoint(cursorPoint, nodes);

@@ -45,6 +45,8 @@ public abstract class Element implements Drawable {
         return this.status != Status.EMPTY_ELEMENT;
     }
 
+    public abstract boolean isTrustful();
+
     @Override
     public String toString() {
         return this.elementName;

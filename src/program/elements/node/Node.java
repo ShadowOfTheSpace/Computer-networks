@@ -87,7 +87,7 @@ public class Node extends Element {
         this.trustFactor = !this.trustFactor;
     }
 
-    public boolean isIntersect(Node node) {
+    public boolean isIntersecting(Node node) {
         if (this.equals(node)) {
             return false;
         }

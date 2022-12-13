@@ -27,7 +27,7 @@ public class Lines {
     }
 
 
-    public static Line getLineOrNullByStatus(Status status, List<Line> lines) {
+    public static Line getLineByStatus(Status status, List<Line> lines) {
         return lines.stream()
                 .filter(line -> line.hasStatus(status))
                 .findFirst()

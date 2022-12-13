@@ -38,7 +38,7 @@ public class Nodes {
 
     public static boolean hasIntersection(Node newNode, List<Node> nodes) {
         for (Node node : nodes) {
-            if (newNode.isIntersect(node)) {
+            if (newNode.isIntersecting(node)) {
                 return true;
             }
         }
